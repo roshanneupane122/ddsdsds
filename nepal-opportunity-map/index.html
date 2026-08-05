@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta -->
+    <title>Catalyst — Nepal Opportunity Map | Discover Business Opportunities Across Nepal</title>
+    <meta
+      name="description"
+      content="AI-powered GIS platform helping entrepreneurs, investors, and policymakers discover and analyze business opportunities across Nepal's 753 municipalities using geographic, demographic, agricultural, tourism, and infrastructure data."
+    />
+    <meta name="theme-color" content="#1B3A4B" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Catalyst — Nepal Opportunity Map" />
+    <meta
+      property="og:description"
+      content="Discover business opportunities across Nepal's 753 municipalities with AI-powered geographic analysis."
+    />
+    <meta property="og:image" content="/assets/og-image.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+
+    <!-- Fonts — preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- MapLibre GL CSS — needed for the map to render correctly -->
+    <link
+      href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="font-body bg-cloud text-peak-700 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

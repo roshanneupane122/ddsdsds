@@ -1,0 +1,11 @@
+# Python & Virtual Environment
+venv/
+__pycache__/
+*.py[cod]
+*.swp
+
+# Environment variables & secrets
+.env
+
+# Docker logs & data volumes
+*.log

@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Global base styles
+   ============================================================ */
+
+@layer base {
+  :root {
+    --color-peak: #1B3A4B;
+    --color-ridge: #2D6A4F;
+    --color-terraced: #52B788;
+    --color-saffron: #F4A261;
+    --color-cloud: #F0F4F8;
+    --color-mist: #8ECAE6;
+  }
+
+  html {
+    @apply scroll-smooth;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  body {
+    @apply font-body text-peak-700 bg-cloud antialiased;
+  }
+
+  /* Dark mode overrides */
+  html.dark body {
+    @apply bg-peak-800 text-cloud;
+  }
+
+  /* Focus-visible styles — accessible keyboard navigation */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-terraced-500;
+  }
+
+  /* Reduced motion — respect user preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Smooth scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-peak-200 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-peak-300;
+  }
+}
+
+/* ============================================================
+   Component utilities
+   ============================================================ */
+
+@layer components {
+  /* Card patterns */
+  .card {
+    @apply bg-white rounded-xl shadow-card border border-peak-100 transition-shadow duration-200;
+  }
+
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200;
+  }
+
+  /* Glass effect for panels over maps */
+  .glass-panel {
+    @apply backdrop-blur-md bg-white/90 border border-white/50 rounded-xl shadow-panel;
+  }
+
+  /* Gradient hero text */
+  .text-gradient {
+    @apply bg-gradient-himalaya bg-clip-text text-transparent;
+  }
+
+  /* Score/metric chip */
+  .score-chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Navigation link */
+  .nav-link {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium
+           text-peak-500 hover:text-peak-700 hover:bg-peak-50
+           transition-colors duration-150;
+  }
+
+  .nav-link-active {
+    @apply text-terraced-600 bg-terraced-50 hover:bg-terraced-100 hover:text-terraced-700;
+  }
+
+  /* Section heading */
+  .section-heading {
+    @apply font-display text-2xl md:text-3xl font-semibold text-peak-700;
+  }
+
+  /* Data table */
+  .data-table {
+    @apply w-full text-sm text-left border-collapse;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 font-medium text-peak-500 bg-peak-50 border-b border-peak-100 uppercase tracking-wide text-xs;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 border-b border-peak-50 text-peak-700;
+  }
+
+  .data-table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-terraced-50/30;
+  }
+}
