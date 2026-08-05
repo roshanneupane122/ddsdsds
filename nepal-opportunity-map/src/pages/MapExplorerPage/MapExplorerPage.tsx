@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { MapContainer, LayerControls, MunicipalityDetailPanel } from '@/features/map'
+import { LeafletMapContainer, LayerControls, MunicipalityDetailPanel } from '@/features/map'
 import { Input, Badge, SkeletonCard } from '@/components/ui'
 import { municipalitiesApi } from '@/services/municipalities.api'
 import type { MunicipalityListItem } from '@/types'
@@ -94,7 +94,7 @@ export const MapExplorerPage = () => {
         {isLoading ? (
           <SkeletonCard className="w-full h-full" />
         ) : (
-          <MapContainer
+          <LeafletMapContainer
             municipalities={municipalities}
             onSelectMunicipality={(m) => setSelectedMunicipality(m)}
           />

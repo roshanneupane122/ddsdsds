@@ -67,6 +67,25 @@
    ============================================================ */
 
 @layer components {
+  .leaflet-municipality-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #52b788;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgb(27 58 75 / 35%);
+    color: #fff;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .leaflet-municipality-marker:hover {
+    background: #2d6a4f;
+    transform: scale(1.12);
+  }
+
   /* Card patterns */
   .card {
     @apply bg-white rounded-xl shadow-card border border-peak-100 transition-shadow duration-200;

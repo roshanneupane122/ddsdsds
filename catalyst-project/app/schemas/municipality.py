@@ -3,6 +3,10 @@ from typing import Optional, Union
 
 from geojson_pydantic import MultiPolygon, Polygon
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic import field_validator
+from geoalchemy2 import WKBElement
+from geoalchemy2.shape import to_shape
+from shapely.geometry import mapping
 
 
 # ==========================================================
@@ -91,6 +95,15 @@ class MunicipalityRead(MunicipalityBase):
 
     # Output serialized GeoJSON boundary for frontend GIS rendering (Mapbox/Leaflet)
     geom: Union[MultiPolygon, Polygon] = Field(..., description="GeoJSON Spatial geometry")
+
+    @field_validator("geom", mode="before")
+    @classmethod
+    def serialize_database_geometry(cls, value):
+        # PostGIS returns WKBElement instances from SQLAlchemy. Convert them
+        # to GeoJSON-compatible mappings before Pydantic validates the response.
+        if isinstance(value, WKBElement):
+            return mapping(to_shape(value))
+        return value
 
     created_at: datetime
     updated_at: datetime

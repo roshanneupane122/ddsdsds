@@ -52,7 +52,7 @@ const ShieldIcon = () => (
 
 const citizenNavItems: NavItem[] = [
   { to: '/citizen/dashboard', label: 'Dashboard', icon: <HomeIcon /> },
-  { to: '/citizen/map', label: 'Map Explorer', icon: <MapIcon /> },
+  { to: '/citizen/explorer', label: 'Explorer', icon: <MapIcon /> },
   { to: '/citizen/recommendations', label: 'Opportunities', icon: <StarIcon /> },
   { to: '/citizen/compare', label: 'Compare', icon: <CompareIcon /> },
   { to: '/citizen/reports', label: 'Reports', icon: <ReportIcon /> },

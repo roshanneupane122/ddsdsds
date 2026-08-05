@@ -11,12 +11,42 @@ type MunicipalityFormState = {
   geom: string
 }
 
+type MunicipalityFormErrors = Partial<Record<keyof MunicipalityFormState, string>>
+
 const emptyForm: MunicipalityFormState = {
   name: '',
   district: '',
   province: '',
   total_population: '0',
-  geom: '{\n  "type": "Polygon",\n  "coordinates": []\n}',
+  geom: '',
+}
+
+function validateForm(form: MunicipalityFormState): MunicipalityFormErrors {
+  const errors: MunicipalityFormErrors = {}
+  if (!form.name.trim()) errors.name = 'Name is required.'
+  if (!form.district.trim()) errors.district = 'District is required.'
+  if (!form.province.trim()) errors.province = 'Province is required.'
+
+  const population = Number(form.total_population)
+  if (!Number.isInteger(population) || population < 0) {
+    errors.total_population = 'Population must be a whole number of 0 or more.'
+  }
+
+  if (!form.geom.trim()) {
+    errors.geom = 'A Polygon or MultiPolygon GeoJSON boundary is required.'
+  } else {
+    try {
+      const geometry = JSON.parse(form.geom)
+      const validType = geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon'
+      if (!validType || !Array.isArray(geometry.coordinates) || geometry.coordinates.length === 0) {
+        errors.geom = 'Boundary must be a non-empty Polygon or MultiPolygon GeoJSON object.'
+      }
+    } catch {
+      errors.geom = 'Boundary must contain valid JSON.'
+    }
+  }
+
+  return errors
 }
 
 export const AdminMunicipalitiesPage = () => {
@@ -26,6 +56,7 @@ export const AdminMunicipalitiesPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [formState, setFormState] = useState<MunicipalityFormState>(emptyForm)
+  const [formErrors, setFormErrors] = useState<MunicipalityFormErrors>({})
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-municipalities', page, search],
@@ -86,11 +117,13 @@ export const AdminMunicipalitiesPage = () => {
   const openCreate = () => {
     setEditingId('new')
     setFormState(emptyForm)
+    setFormErrors({})
   }
 
   const openEdit = async (row: any) => {
     try {
       setEditingId(row.id)
+      setFormErrors({})
       const detail = await municipalitiesApi.detail(row.id)
       setFormState({
         name: detail.name,
@@ -106,6 +139,10 @@ export const AdminMunicipalitiesPage = () => {
   }
 
   const submit = async () => {
+    const errors = validateForm(formState)
+    setFormErrors(errors)
+    if (Object.keys(errors).length > 0) return
+
     if (editingId === 'new') {
       await createMutation.mutateAsync(formState)
       return
@@ -278,24 +315,26 @@ export const AdminMunicipalitiesPage = () => {
         }
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Name" value={formState.name} onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value }))} />
-          <Input label="District" value={formState.district} onChange={(e) => setFormState((p) => ({ ...p, district: e.target.value }))} />
-          <Input label="Province" value={formState.province} onChange={(e) => setFormState((p) => ({ ...p, province: e.target.value }))} />
+          <Input label="Name" required error={formErrors.name} value={formState.name} onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value }))} />
+          <Input label="District" required error={formErrors.district} value={formState.district} onChange={(e) => setFormState((p) => ({ ...p, district: e.target.value }))} />
+          <Input label="Province" required error={formErrors.province} value={formState.province} onChange={(e) => setFormState((p) => ({ ...p, province: e.target.value }))} />
           <Input
             label="Population"
+            error={formErrors.total_population}
             type="number"
             min={0}
             value={formState.total_population}
             onChange={(e) => setFormState((p) => ({ ...p, total_population: e.target.value }))}
           />
           <label className="md:col-span-2 space-y-1">
-            <span className="block text-sm font-medium text-peak-600">GeoJSON Boundary</span>
+            <span className="block text-sm font-medium text-peak-600">GeoJSON Boundary <span className="text-red-400">*</span></span>
             <textarea
               value={formState.geom}
               onChange={(e) => setFormState((p) => ({ ...p, geom: e.target.value }))}
               rows={10}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg font-mono"
+              className={`w-full px-3 py-2 text-sm rounded-lg font-mono ${formErrors.geom ? 'border border-red-400' : 'border border-peak-200'}`}
             />
+            {formErrors.geom ? <span className="block mt-1.5 text-xs text-red-500">{formErrors.geom}</span> : <span className="block mt-1.5 text-xs text-peak-400">Paste a valid GeoJSON Polygon or MultiPolygon with coordinates.</span>}
           </label>
         </div>
       </Modal>

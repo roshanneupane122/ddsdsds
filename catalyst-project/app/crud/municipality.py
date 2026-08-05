@@ -3,7 +3,7 @@ import json
 
 from geoalchemy2.functions import ST_AsGeoJSON, ST_Contains, ST_Point, ST_SetSRID
 from geoalchemy2.shape import from_shape
-from shapely.geometry import shape
+from shapely.geometry import MultiPolygon as ShapelyMultiPolygon, shape
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -118,10 +118,11 @@ async def create_municipality(
     municipality_in: MunicipalityCreate,
 ) -> Municipality:
 
-    geometry = from_shape(
-        shape(municipality_in.geom.model_dump()),
-        srid=4326,
-    )
+    geometry_shape = shape(municipality_in.geom.model_dump())
+    if geometry_shape.geom_type == "Polygon":
+        geometry_shape = ShapelyMultiPolygon([geometry_shape])
+
+    geometry = from_shape(geometry_shape, srid=4326)
 
     db_obj = Municipality(
         name=municipality_in.name,
@@ -153,8 +154,13 @@ async def update_municipality(
     geometry = update_data.pop("geom", None)
 
     if geometry is not None:
+        geometry_shape = shape(
+            geometry.model_dump() if hasattr(geometry, "model_dump") else geometry
+        )
+        if geometry_shape.geom_type == "Polygon":
+            geometry_shape = ShapelyMultiPolygon([geometry_shape])
         db_municipality.geom = from_shape(
-            shape(geometry),
+            geometry_shape,
             srid=4326,
         )
 

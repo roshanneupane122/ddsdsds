@@ -129,6 +129,16 @@ export const router = createBrowserRouter([
             ),
           },
           {
+            path: 'explorer',
+            element: (
+              <S>
+                <ErrorBoundary featureName="Explorer">
+                  <MapExplorerPage />
+                </ErrorBoundary>
+              </S>
+            ),
+          },
+          {
             path: 'municipalities/:id',
             element: (
               <S>

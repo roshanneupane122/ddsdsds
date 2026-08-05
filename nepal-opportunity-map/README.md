@@ -49,7 +49,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser. MSW (Mock S
 
 | Variable Name | Default Value | Description |
 |---|---|---|
-| `VITE_API_BASE_URL` | `https://api.nepalopportunitymap.gov.np/v1` | Root URL for backend REST API calls |
+| `VITE_API_BASE_URL` | *(empty in local development)* | Optional API root; empty uses the Vite proxy to local FastAPI |
 | `VITE_MAP_TILE_URL` | `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | MapLibre raster tile server URL pattern |
 | `VITE_MAP_STYLE_URL` | `https://demotiles.maplibre.org/style.json` | MapLibre JSON style sheet URL |
 | `VITE_APP_ENV` | `development` | Environment mode (`development` enables MSW mocks) |
