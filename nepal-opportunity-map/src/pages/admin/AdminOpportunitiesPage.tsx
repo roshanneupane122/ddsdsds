@@ -128,26 +128,26 @@ export const AdminOpportunitiesPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-peak-800">Opportunity Management</h1>
-          <p className="text-xs text-peak-400 mt-1">Create, edit, and delete business opportunities</p>
+          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Opportunity Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Create, edit, and delete business opportunities</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs" onClick={openCreate}>
+          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
             Add Opportunity
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
             🔒 Admin Only
           </div>
         </div>
       </div>
 
-      <Card padding="md" className="bg-white border border-peak-100 shadow-xs">
+      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
         <Input placeholder="Search opportunities…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </Card>
 
-      <Card padding="none" className="bg-white border border-peak-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-peak-100 flex items-center justify-between">
-          <h3 className="font-semibold text-peak-800 text-sm">Opportunity Catalog</h3>
+      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
+        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+          <h3 className="font-semibold text-white text-sm font-display">Opportunity Catalog</h3>
           <Badge variant="muted" size="sm">
             {filtered.length} total
           </Badge>
@@ -159,38 +159,38 @@ export const AdminOpportunitiesPage = () => {
           </div>
         )}
 
-        {error && <div className="py-8 text-center text-xs text-red-500">Failed to load opportunities.</div>}
+        {error && <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load opportunities.</div>}
 
         {!isLoading && filtered.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-peak-50 border-b border-peak-100">
+              <thead className="bg-[#0A0C10] border-b border-white/5">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Title</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Sector</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Investment</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Updated</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Actions</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Title</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Sector</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Investment</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Updated</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-peak-50">
+              <tbody className="divide-y divide-white/5">
                 {filtered.map((item) => (
-                  <tr key={item.opportunity_id} className="hover:bg-peak-50 transition-colors">
+                  <tr key={item.opportunity_id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-peak-800">{item.title}</div>
-                      <div className="text-peak-400 mt-1 line-clamp-2">{item.description || 'No description provided.'}</div>
+                      <div className="font-medium text-white">{item.title}</div>
+                      <div className="text-slate-500 mt-1 line-clamp-2 font-mono text-[10px]">{item.description || 'No description provided.'}</div>
                     </td>
-                    <td className="px-4 py-3 text-peak-500">{item.sector || 'Unspecified'}</td>
-                    <td className="px-4 py-3 text-peak-500">
+                    <td className="px-4 py-3 text-slate-400 font-mono">{item.sector || 'Unspecified'}</td>
+                    <td className="px-4 py-3 text-slate-400 font-mono tabular-nums">
                       {item.min_investment?.toLocaleString() || 'N/A'} - {item.max_investment?.toLocaleString() || 'N/A'}
                     </td>
-                    <td className="px-4 py-3 text-peak-400">{item.updated_at.slice(0, 10)}</td>
+                    <td className="px-4 py-3 text-slate-500 font-mono">{item.updated_at.slice(0, 10)}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => openEdit(item)}>
+                        <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(item)}>
                           Edit
                         </Button>
-                        <Button variant="danger" size="sm" className="text-xs" onClick={() => setDeletingId(item.opportunity_id)}>
+                        <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(item.opportunity_id)}>
                           Delete
                         </Button>
                       </div>
@@ -203,7 +203,7 @@ export const AdminOpportunitiesPage = () => {
         )}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="py-12 text-center text-xs text-peak-400">No opportunities match your search.</div>
+          <div className="py-12 text-center text-xs text-slate-500 font-mono">No opportunities match your search.</div>
         )}
       </Card>
 
@@ -254,12 +254,12 @@ export const AdminOpportunitiesPage = () => {
             className="md:col-span-2"
           />
           <label className="md:col-span-2 space-y-1">
-            <span className="block text-sm font-medium text-peak-600">Description</span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Description</span>
             <textarea
               value={formState.description}
               onChange={(e) => setFormState((p) => ({ ...p, description: e.target.value }))}
               rows={5}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg"
+              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 font-mono"
             />
           </label>
         </div>

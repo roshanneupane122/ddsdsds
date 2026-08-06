@@ -41,22 +41,11 @@ export const Header = () => {
   }
 
   return (
-    <header
-      className={[
-        'fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-4 gap-4 shadow-2xs',
-        isAdmin
-          ? 'bg-peak-900 border-b border-peak-700'
-          : 'bg-white border-b border-peak-100',
-      ].join(' ')}
-    >
+    <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center px-4 gap-4 bg-[#0A0C10]/95 backdrop-blur-xl border-b border-white/5">
       {/* Sidebar toggle */}
       <button
         onClick={toggleSidebar}
-        className={`p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terraced-400 ${
-          isAdmin
-            ? 'text-peak-400 hover:text-peak-200 hover:bg-peak-700'
-            : 'text-peak-500 hover:text-peak-700 hover:bg-peak-50'
-        }`}
+        className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terraced-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0C10]"
         aria-label="Toggle sidebar navigation"
         id="sidebar-toggle-btn"
       >
@@ -66,19 +55,19 @@ export const Header = () => {
       {/* Logo */}
       <Link
         to={dashboardLink}
-        className="flex items-center gap-2.5 flex-shrink-0"
+        className="flex items-center gap-2.5 flex-shrink-0 group"
         aria-label="Catalyst Nepal Opportunity Map — Dashboard"
       >
-        <div className="w-8 h-8 rounded-lg bg-gradient-himalaya flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-terraced-600 flex items-center justify-center shadow-[0_0_12px_rgba(20,184,166,0.25)] group-hover:shadow-[0_0_16px_rgba(20,184,166,0.4)] transition-shadow duration-300">
           <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </svg>
         </div>
         <div className="hidden sm:block">
-          <span className={`font-display font-semibold text-sm leading-none ${isAdmin ? 'text-peak-100' : 'text-peak-700'}`}>
+          <span className="font-display font-semibold text-sm leading-none text-white tracking-tight block">
             Catalyst
           </span>
-          <span className={`block text-2xs tracking-wide ${isAdmin ? 'text-peak-400' : 'text-peak-400'}`}>
+          <span className="block text-[10px] tracking-wider text-slate-500 font-mono uppercase mt-0.5">
             Nepal Opportunity Map
           </span>
         </div>
@@ -86,8 +75,8 @@ export const Header = () => {
 
       {/* Admin banner badge */}
       {isAdmin && (
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 text-2xs font-semibold">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono font-semibold uppercase tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
           ADMIN
         </div>
       )}
@@ -98,11 +87,7 @@ export const Header = () => {
       {/* Dark mode toggle */}
       <button
         onClick={toggleDarkMode}
-        className={`p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terraced-400 ${
-          isAdmin
-            ? 'text-peak-400 hover:text-peak-200 hover:bg-peak-700'
-            : 'text-peak-500 hover:text-peak-700 hover:bg-peak-50'
-        }`}
+        className="p-2 rounded-lg text-slate-400 hover:text-terraced-400 hover:bg-white/5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terraced-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0C10]"
         aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         id="dark-mode-toggle-btn"
       >
@@ -111,16 +96,16 @@ export const Header = () => {
 
       {/* User & Logout section */}
       {isAuthenticated && (
-        <div className={`flex items-center gap-3 border-l pl-4 ${isAdmin ? 'border-peak-700' : 'border-peak-100'}`}>
+        <div className="flex items-center gap-3 border-l border-white/10 pl-4">
           <div className="hidden sm:block text-right">
-            <span className={`block text-xs font-semibold leading-none ${isAdmin ? 'text-peak-100' : 'text-peak-700'}`}>
+            <span className="block text-xs font-semibold leading-none text-white tracking-tight">
               {user?.name || user?.email}
             </span>
             <span
-              className={`text-2xs font-semibold px-1.5 py-0.5 rounded ${
+              className={`inline-block mt-1 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider ${
                 isAdmin
-                  ? 'text-red-300 bg-red-500/10'
-                  : 'text-terraced-600 bg-terraced-50'
+                  ? 'text-red-400 bg-red-500/10 border border-red-500/20'
+                  : 'text-terraced-400 bg-terraced-500/10 border border-terraced-500/20'
               }`}
             >
               {user?.role}
@@ -130,11 +115,7 @@ export const Header = () => {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className={`flex items-center gap-1.5 text-xs ${
-              isAdmin
-                ? 'border-peak-600 text-peak-300 hover:text-red-400 hover:border-red-500/40 bg-transparent'
-                : 'text-peak-600 hover:text-red-600 hover:border-red-200'
-            }`}
+            className="flex items-center gap-1.5 text-xs border-white/10 text-slate-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5 bg-transparent transition-all duration-200 h-8"
           >
             <LogoutIcon />
             <span className="hidden sm:inline">Logout</span>

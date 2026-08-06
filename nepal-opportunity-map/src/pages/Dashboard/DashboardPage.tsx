@@ -12,6 +12,7 @@ export const DashboardPage = () => {
   }
 
   return (
+  
     <div className="space-y-8 pb-12">
       {/* ── WELCOME BANNER ── */}
       <section className="bg-gradient-hero rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
