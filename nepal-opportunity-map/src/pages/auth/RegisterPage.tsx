@@ -39,26 +39,24 @@ export const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0C10] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Subtle background grid - NO GRADIENTS */}
+    <div className="min-h-screen bg-[#F4FBF7] flex items-center justify-center px-4 py-12 relative overflow-hidden">
       <div 
-        className="absolute inset-0 -z-0 opacity-[0.03]" 
+        className="absolute inset-0 -z-0 opacity-40" 
         style={{ 
-          backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
-          backgroundSize: '48px 48px' 
+          backgroundImage: 'radial-gradient(#10b981 1px, transparent 1px)', 
+          backgroundSize: '32px 32px' 
         }} 
       />
 
-      <Card padding="lg" className="w-full max-w-md bg-[#12141A] border border-white/5 shadow-2xl space-y-8 relative z-10">
-        {/* Header with Logo Mark */}
+      <Card padding="lg" className="w-full max-w-md bg-white border border-emerald-100 shadow-xl space-y-8 relative z-10 rounded-2xl">
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 rounded-lg bg-terraced-600 mx-auto flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.2)] mb-4">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-500 mx-auto flex items-center justify-center shadow-lg shadow-emerald-600/30 mb-4">
+            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Create Catalyst Account</h1>
-          <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">Spatial Economic Intelligence Platform</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Create Catalyst Account</h1>
+          <p className="text-xs text-emerald-800 font-mono font-bold uppercase tracking-wider">Spatial Economic Intelligence Platform</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -67,7 +65,6 @@ export const RegisterPage = () => {
             placeholder="Priya Sharma"
             error={errors.name?.message}
             {...register('name')}
-            className="bg-[#0A0C10] border-white/10 text-white placeholder:text-slate-600 focus:border-terraced-500/50 focus:ring-1 focus:ring-terraced-500/50"
           />
 
           <Input
@@ -76,7 +73,6 @@ export const RegisterPage = () => {
             placeholder="name@organization.np"
             error={errors.email?.message}
             {...register('email')}
-            className="bg-[#0A0C10] border-white/10 text-white placeholder:text-slate-600 focus:border-terraced-500/50 focus:ring-1 focus:ring-terraced-500/50"
           />
 
           <Input
@@ -85,29 +81,27 @@ export const RegisterPage = () => {
             placeholder="••••••••"
             error={errors.password?.message}
             {...register('password')}
-            className="bg-[#0A0C10] border-white/10 text-white placeholder:text-slate-600 focus:border-terraced-500/50 focus:ring-1 focus:ring-terraced-500/50"
           />
 
           <Button 
             type="submit" 
             isLoading={isSubmitting} 
-            className="w-full mt-4 bg-terraced-600 hover:bg-terraced-500 text-white font-semibold border-0 h-11 shadow-none"
+            className="w-full mt-4 h-11 text-base font-bold shadow-md shadow-emerald-600/20"
           >
-            Create Account
+            Create Account →
           </Button>
         </form>
 
-        <div className="text-center text-xs text-slate-500 pt-6 border-t border-white/5">
-          Already have institutional access?{' '}
-          <Link to="/login" className="text-terraced-400 font-medium hover:text-terraced-300 transition-colors">
+        <div className="text-center text-xs text-slate-600 pt-6 border-t border-emerald-100 font-medium">
+          Already have an account?{' '}
+          <Link to="/login" className="text-emerald-700 font-bold hover:underline">
             Sign in
           </Link>
         </div>
       </Card>
 
-      {/* Footer disclaimer for premium feel */}
-      <p className="absolute bottom-6 text-[10px] text-slate-700 font-mono text-center w-full px-4">
-        PROTECTED SYSTEM • UNAUTHORIZED ACCESS IS PROHIBITED • v2.4.0
+      <p className="absolute bottom-6 text-[10px] text-slate-500 font-mono text-center w-full px-4 font-semibold uppercase tracking-wider">
+        SECURE GIS SYSTEM • NEPAL MUNICIPALITY ENGINE • v2.4.0
       </p>
     </div>
   )

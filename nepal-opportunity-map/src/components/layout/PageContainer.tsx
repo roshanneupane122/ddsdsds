@@ -14,7 +14,7 @@ export const PageContainer = ({ children, fullWidth = false, className = '' }: P
   return (
     <main
       className={[
-        'min-h-screen pt-16 bg-[#0A0C10] transition-all duration-300',
+        'min-h-screen pt-16 bg-[#F4FBF7] transition-all duration-300',
         isSidebarOpen ? 'lg:pl-60' : 'lg:pl-16',
         className,
       ].join(' ')}
@@ -34,16 +34,19 @@ export const Footer = () => {
   return (
     <footer
       className={[
-        'bg-[#08090D] border-t border-white/5 py-4 px-6 transition-all duration-300',
+        'bg-white border-t border-emerald-100/90 py-5 px-6 transition-all duration-300 shadow-2xs',
         isSidebarOpen ? 'lg:pl-60' : 'lg:pl-16',
       ].join(' ')}
     >
-      <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p className="text-[10px] text-slate-600 font-mono uppercase tracking-wider">
-          © {currentYear} Catalyst — Nepal Opportunity Map. All rights reserved.
-        </p>
-        <p className="text-[10px] text-slate-700 font-mono uppercase tracking-wider">
-          Municipality data: Nepal federal restructuring 2017 (753 local units)
+      <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-600" />
+          <p className="text-xs text-slate-700 font-medium">
+            © {currentYear} Catalyst — Nepal Opportunity Map. All rights reserved.
+          </p>
+        </div>
+        <p className="text-xs text-emerald-800 font-mono font-medium">
+          753 Municipalities GIS Intelligence Engine
         </p>
       </div>
     </footer>

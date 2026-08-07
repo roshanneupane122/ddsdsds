@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from '@/App'
-import { ProtectedRoute, AdminRoute, CitizenRoute, PublicRoute } from './ProtectedRoute'
+import { AdminRoute, CitizenRoute, PublicRoute } from './ProtectedRoute'
 import { ErrorBoundary } from '@/components/ui'
 import { Outlet } from 'react-router-dom'
 
@@ -52,7 +52,7 @@ const AdminRecommendationsPage = lazy(() =>
 
 const Loading = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
-    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-terraced-500" />
+    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600" />
   </div>
 )
 
@@ -228,32 +228,13 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // ── Legacy /dashboard/* → Citizen redirects ────────
-      {
-        path: 'dashboard',
-        element: (
-          <ProtectedRoute>
-            <Outlet />
-          </ProtectedRoute>
-        ),
-        children: [
-          { index: true, element: <Navigate to="/citizen/dashboard" replace /> },
-          { path: 'map', element: <Navigate to="/citizen/map" replace /> },
-          { path: 'municipalities/:id', element: <Navigate to="/citizen/municipalities/:id" replace /> },
-          { path: 'compare', element: <Navigate to="/citizen/compare" replace /> },
-          { path: 'recommendations', element: <Navigate to="/citizen/recommendations" replace /> },
-          { path: 'reports', element: <Navigate to="/citizen/reports" replace /> },
-          { path: '*', element: <Navigate to="/citizen/dashboard" replace /> },
-        ],
-      },
-
-      // ── Other legacy redirects ──────────────────────────
+      // ── Legacy redirects ───────────────────────────────
       { path: 'map', element: <Navigate to="/citizen/map" replace /> },
+      { path: 'municipalities/:id', element: <Navigate to="/citizen/municipalities/:id" replace /> },
       { path: 'compare', element: <Navigate to="/citizen/compare" replace /> },
       { path: 'recommendations', element: <Navigate to="/citizen/recommendations" replace /> },
       { path: 'reports', element: <Navigate to="/citizen/reports" replace /> },
-      { path: 'auth/login', element: <Navigate to="/login" replace /> },
-      { path: 'auth/register', element: <Navigate to="/register" replace /> },
+      { path: 'dashboard/*', element: <Navigate to="/citizen/dashboard" replace /> },
       {
         path: '*',
         element: (

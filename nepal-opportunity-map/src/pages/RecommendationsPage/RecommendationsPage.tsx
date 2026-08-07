@@ -19,21 +19,21 @@ export const RecommendationsPage = () => {
     <div className="space-y-8 pb-12">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold font-display text-peak-700">AI Business Opportunity Explorer</h1>
-        <p className="text-sm text-peak-500 max-w-2xl">
+        <h1 className="text-3xl font-bold font-display text-slate-900 tracking-tight">AI Business Opportunity Explorer</h1>
+        <p className="text-sm text-slate-600 max-w-2xl">
           Filter and analyze AI-generated business venture opportunities across Nepal's 753 municipalities.
         </p>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-peak-100 shadow-sm space-y-4">
+      <div className="bg-white p-4.5 rounded-2xl border border-emerald-100/90 shadow-sm space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Input
             placeholder="Search opportunity title or keyword..."
             value={recommendationFilter.search}
             onChange={(e) => setRecommendationFilter({ search: e.target.value })}
             leftIcon={
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             }
@@ -46,7 +46,7 @@ export const RecommendationsPage = () => {
                 category: e.target.value ? (e.target.value as any) : null,
               })
             }
-            className="px-3 py-2 bg-peak-50 border border-peak-200 rounded-lg text-xs font-medium text-peak-700 focus:outline-none focus:ring-2 focus:ring-terraced-400"
+            className="px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
           >
             <option value="">All Sectors / Categories</option>
             {OPPORTUNITY_CATEGORIES.map((cat) => (
@@ -63,9 +63,9 @@ export const RecommendationsPage = () => {
                 province: e.target.value ? (Number(e.target.value) as any) : null,
               })
             }
-            className="px-3 py-2 bg-peak-50 border border-peak-200 rounded-lg text-xs font-medium text-peak-700 focus:outline-none focus:ring-2 focus:ring-terraced-400"
+            className="px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
           >
-            <option value="">All Provinces (7)</option>
+            <option value="">All 7 Provinces</option>
             {PROVINCES.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -74,11 +74,11 @@ export const RecommendationsPage = () => {
           </select>
         </div>
 
-        <div className="flex justify-between items-center text-xs text-peak-400 pt-2 border-t border-peak-50">
-          <span>Showing {recommendations.length} opportunities</span>
+        <div className="flex justify-between items-center text-xs text-slate-500 pt-3 border-t border-emerald-100 font-mono">
+          <span className="font-semibold">Showing {recommendations.length} opportunities</span>
           <button
             onClick={resetRecommendationFilter}
-            className="text-terraced-600 hover:underline"
+            className="text-emerald-700 hover:underline font-bold"
           >
             Reset Filters
           </button>
@@ -105,7 +105,7 @@ export const RecommendationsPage = () => {
           action={
             <button
               onClick={resetRecommendationFilter}
-              className="text-xs text-terraced-600 hover:underline font-semibold"
+              className="text-xs text-emerald-700 hover:underline font-bold"
             >
               Reset All Filters
             </button>

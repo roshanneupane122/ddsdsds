@@ -82,26 +82,26 @@ export const Sidebar = () => {
   return (
     <aside
       className={[
-        'flex flex-col border-r border-white/5 transition-all duration-300 ease-in-out',
+        'flex flex-col border-r border-emerald-100/90 transition-all duration-300 ease-in-out',
         'fixed left-0 top-16 bottom-0 z-30 overflow-hidden',
-        'bg-[#0D0F14]',
+        'bg-white/95 backdrop-blur-md shadow-xs',
         isSidebarOpen ? 'w-60' : 'w-0 lg:w-16',
       ].join(' ')}
       aria-label="Main navigation"
     >
-      <div className="flex-1 overflow-y-auto py-4 px-3">
+      <div className="flex-1 overflow-y-auto py-5 px-3">
         {/* Section label when expanded */}
         {isSidebarOpen && (
-          <div className="mb-6 px-2">
+          <div className="mb-4 px-3">
             {isAdmin ? (
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
-                <p className="text-[10px] uppercase tracking-[0.2em] font-mono font-semibold text-slate-500">
-                  Admin Panel
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse flex-shrink-0" />
+                <p className="text-[10px] uppercase tracking-widest font-mono font-bold text-emerald-800">
+                  Admin Workspace
                 </p>
               </div>
             ) : (
-              <p className="text-[10px] uppercase tracking-[0.2em] font-mono font-semibold text-slate-500">
+              <p className="text-[10px] uppercase tracking-widest font-mono font-bold text-emerald-700">
                 Navigation
               </p>
             )}
@@ -109,7 +109,7 @@ export const Sidebar = () => {
         )}
 
         {/* Nav items */}
-        <nav className="space-y-1">
+        <nav className="space-y-1.5">
           {navItems.map((item) => {
             const isActive =
               location.pathname === item.to || location.pathname.startsWith(item.to + '/')
@@ -118,20 +118,18 @@ export const Sidebar = () => {
                 key={item.to}
                 to={item.to}
                 className={[
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium',
-                  isAdmin
-                    ? isActive
-                      ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_12px_rgba(239,68,68,0.08)]'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
-                    : isActive
-                      ? 'bg-terraced-500/10 text-terraced-400 border border-terraced-500/20 shadow-[0_0_12px_rgba(20,184,166,0.08)]'
-                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent',
+                  'flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium',
+                  isActive
+                    ? 'bg-emerald-50 text-emerald-800 border-l-4 border-emerald-600 font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/60 border-l-4 border-transparent',
                   !isSidebarOpen ? 'justify-center px-2' : '',
                 ].join(' ')}
                 title={!isSidebarOpen ? item.label : undefined}
                 aria-current={isActive ? 'page' : undefined}
               >
-                {item.icon}
+                <span className={isActive ? 'text-emerald-700' : 'text-slate-400 group-hover:text-emerald-600'}>
+                  {item.icon}
+                </span>
                 {isSidebarOpen && <span className="tracking-tight">{item.label}</span>}
               </Link>
             )
@@ -140,38 +138,24 @@ export const Sidebar = () => {
       </div>
 
       {/* User section */}
-      <div className="p-3 border-t border-white/5">
+      <div className="p-3 border-t border-emerald-100/80 bg-emerald-50/30">
         {isAuthenticated && user ? (
           <div className={`flex items-center gap-2.5 ${!isSidebarOpen ? 'justify-center' : ''}`}>
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${
-                isAdmin
-                  ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                  : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
-              }`}
-            >
-              <span className="text-xs font-bold font-mono">
-                {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-              </span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center flex-shrink-0 shadow-xs font-bold text-xs font-mono">
+              {(user.name || user.email || 'U').charAt(0).toUpperCase()}
             </div>
             {isSidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate text-white tracking-tight">
+                <p className="text-xs font-bold truncate text-slate-900 tracking-tight">
                   {user.name || user.email}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span
-                    className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider border ${
-                      isAdmin
-                        ? 'bg-red-500/10 text-red-400 border-red-500/20'
-                        : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
-                    }`}
-                  >
+                  <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase tracking-wider">
                     {user.role}
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="text-[10px] font-mono text-slate-500 hover:text-red-400 transition-colors uppercase tracking-wider"
+                    className="text-[10px] font-mono text-slate-500 hover:text-red-600 transition-colors uppercase tracking-wider font-semibold"
                   >
                     Logout
                   </button>
@@ -182,7 +166,7 @@ export const Sidebar = () => {
         ) : (
           isSidebarOpen && (
             <Link to="/login">
-              <Button variant="outline" size="sm" className="w-full border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent">
+              <Button variant="outline" size="sm" className="w-full border-emerald-200 text-emerald-800 hover:bg-emerald-50 bg-white">
                 Sign in
               </Button>
             </Link>

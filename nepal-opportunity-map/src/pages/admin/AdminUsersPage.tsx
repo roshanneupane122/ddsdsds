@@ -101,7 +101,7 @@ export const AdminUsersPage = () => {
     return (
       <div className="space-y-6 pb-12">
         <div className="py-16 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-terraced-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
         </div>
       </div>
     )
@@ -111,34 +111,34 @@ export const AdminUsersPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-white tracking-tight">User Management</h1>
-          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Manage all registered users and their roles</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">User Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Manage all registered users and permissions</p>
         </div>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
-          🔒 Admin Only
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-mono font-bold border border-emerald-200 uppercase tracking-wider">
+          🔒 Admin Console
         </div>
       </div>
 
       {/* Filters */}
-      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
+      <Card padding="md" className="bg-white border border-emerald-100 shadow-sm">
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-3 py-2 text-xs border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-500/50 bg-[#0A0C10] text-white placeholder:text-slate-600 font-mono"
+            className="flex-1 px-4 py-2.5 text-xs border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white text-slate-900 placeholder:text-slate-400 font-medium"
           />
-          <div className="flex gap-1 bg-[#0A0C10] p-1 rounded-lg border border-white/5">
+          <div className="flex gap-1 bg-emerald-50/60 p-1 rounded-xl border border-emerald-100">
             {(['all', 'ADMIN', 'MUNICIPAL_OFFICIAL', 'CITIZEN'] as const).map((r) => (
               <button
                 key={r}
                 onClick={() => setRoleFilter(r)}
                 className={[
-                  'px-3 py-1.5 rounded-md text-[10px] font-mono font-semibold transition-all uppercase tracking-wider',
+                  'px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all uppercase tracking-wider',
                   roleFilter === r
-                    ? 'bg-[#12141A] text-white shadow-sm border border-white/10'
-                    : 'text-slate-500 hover:text-slate-300 border border-transparent',
+                    ? 'bg-white text-emerald-900 shadow-xs border border-emerald-200'
+                    : 'text-slate-600 hover:text-emerald-700 border border-transparent',
                 ].join(' ')}
               >
                 {r === 'all' ? 'All Roles' : roleLabel(r)}
@@ -149,63 +149,63 @@ export const AdminUsersPage = () => {
       </Card>
 
       {/* Users Table */}
-      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-white text-sm font-display">
+      <Card padding="none" className="bg-white border border-emerald-100 shadow-sm overflow-hidden rounded-2xl">
+        <div className="p-4 md:p-5 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/40">
+          <h3 className="font-bold text-slate-900 text-sm font-display">
             {filtered.length} user{filtered.length !== 1 ? 's' : ''} found
           </h3>
-          <Badge variant="muted" size="sm">
-            {users.length} total
+          <Badge variant="success" size="sm">
+            {users.length} TOTAL REGISTERED
           </Badge>
         </div>
-        {error && <div className="py-6 text-center text-xs text-red-400 font-mono">Failed to load users.</div>}
+        {error && <div className="py-6 text-center text-xs text-red-500 font-mono">Failed to load users.</div>}
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-[#0A0C10] border-b border-white/5">
+            <thead className="bg-emerald-50/70 border-b border-emerald-100">
               <tr>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Name</th>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Email</th>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Role</th>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Joined</th>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Updated</th>
-                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Name</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Email</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Role</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Joined</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Updated</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {filtered.map((u) => (
-                <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-4 py-3">
+                <tr key={u.id} className="hover:bg-emerald-50/40 transition-colors">
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-terraced-500/10 border border-terraced-500/20 flex items-center justify-center text-terraced-400 font-bold text-xs flex-shrink-0 font-mono">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 font-mono shadow-2xs">
                         {u.name.charAt(0)}
                       </div>
-                      <span className="font-medium text-white">{u.name}</span>
+                      <span className="font-bold text-slate-900">{u.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-400 font-mono">{u.email}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5 text-slate-600 font-mono font-medium">{u.email}</td>
+                  <td className="px-4 py-3.5">
                     <span
-                      className={`inline-flex px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider border ${
+                      className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${
                         u.role === 'ADMIN'
-                          ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                          ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
                           : u.role === 'MUNICIPAL_OFFICIAL'
-                            ? 'bg-saffron-500/10 text-saffron-400 border-saffron-500/20'
-                            : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
+                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       }`}
                     >
                       {roleLabel(u.role)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 font-mono">{formatDate(u.createdAt)}</td>
-                  <td className="px-4 py-3 text-slate-500 font-mono">
+                  <td className="px-4 py-3.5 text-slate-500 font-mono">{formatDate(u.createdAt)}</td>
+                  <td className="px-4 py-3.5 text-slate-500 font-mono">
                     {formatDate(u.updatedAt)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(u)}>
+                      <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => openEdit(u)}>
                         Edit
                       </Button>
-                      <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingUser(u)}>
+                      <Button variant="danger" size="sm" className="text-xs h-8" onClick={() => setDeletingUser(u)}>
                         Delete
                       </Button>
                     </div>
@@ -224,7 +224,7 @@ export const AdminUsersPage = () => {
         isOpen={!!editingUser}
         onClose={() => setEditingUser(null)}
         title={editingUser ? `Edit ${editingUser.name}` : 'Edit User'}
-        description="Update the stored profile data for this account."
+        description="Update profile information and system privileges."
         size="lg"
         footer={
           <>
@@ -240,12 +240,12 @@ export const AdminUsersPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="Full Name" value={formState.name} onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value }))} />
           <Input label="Email" value={formState.email} onChange={(e) => setFormState((p) => ({ ...p, email: e.target.value }))} />
-          <label className="space-y-1 md:col-span-2">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Role</span>
+          <label className="space-y-1.5 md:col-span-2">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Role</span>
             <select
               value={formState.role}
               onChange={(e) => setFormState((p) => ({ ...p, role: e.target.value as AdminUserRole }))}
-              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
+              className="w-full px-3.5 py-2.5 text-sm border border-emerald-200 rounded-xl bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
             >
               <option value="ADMIN">Admin</option>
               <option value="MUNICIPAL_OFFICIAL">Municipal Official</option>
@@ -257,7 +257,7 @@ export const AdminUsersPage = () => {
             type="password"
             value={formState.password}
             onChange={(e) => setFormState((p) => ({ ...p, password: e.target.value }))}
-            hint="Leave blank to keep the current password."
+            hint="Leave blank to keep current password."
             className="md:col-span-2"
           />
         </div>
@@ -267,9 +267,9 @@ export const AdminUsersPage = () => {
         isOpen={!!deletingUser}
         onClose={() => setDeletingUser(null)}
         onConfirm={() => deletingUser && deleteMutation.mutate(deletingUser.id)}
-        title="Delete user"
-        message={deletingUser ? `Remove ${deletingUser.name} (${deletingUser.email}) from the system?` : ''}
-        confirmLabel="Delete"
+        title="Delete User"
+        message={deletingUser ? `Are you sure you want to remove ${deletingUser.name} (${deletingUser.email})?` : ''}
+        confirmLabel="Delete User"
         isDangerous
         isLoading={deleteMutation.isPending}
       />

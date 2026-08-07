@@ -18,7 +18,7 @@ from app.schemas.municipality import (
     MunicipalityCreate,
     MunicipalityUpdate,
 )
-
+from typing import Optional, Sequence
 
 # ==========================================================
 # Helper
@@ -89,12 +89,20 @@ async def get_municipality(
 async def list_municipalities(
     db: AsyncSession,
     *,
+    search: Optional[str] = None,
+    q: Optional[str] = None,
+    district: Optional[str] = None,
+    province: Optional[str] = None,
     skip: int = 0,
     limit: int = 20,
 ) -> Sequence[Municipality]:
 
     return await get_municipalities(
         db=db,
+        search=search,
+        q=q,
+        district=district,
+        province=province,
         skip=skip,
         limit=limit,
     )

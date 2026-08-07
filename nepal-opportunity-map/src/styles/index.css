@@ -3,17 +3,18 @@
 @tailwind utilities;
 
 /* ============================================================
-   Global base styles
+   Global base styles — Premium White & Emerald Green Theme
    ============================================================ */
 
 @layer base {
   :root {
-    --color-peak: #1B3A4B;
-    --color-ridge: #2D6A4F;
-    --color-terraced: #52B788;
-    --color-saffron: #F4A261;
-    --color-cloud: #F0F4F8;
-    --color-mist: #8ECAE6;
+    --color-emerald-primary: #059669;
+    --color-emerald-dark: #047857;
+    --color-mint-light: #ecfdf5;
+    --color-bg-canvas: #F4FBF7;
+    --color-surface-white: #ffffff;
+    --color-text-main: #0f172a;
+    --color-text-muted: #64748b;
   }
 
   html {
@@ -22,20 +23,15 @@
   }
 
   body {
-    @apply font-body text-peak-700 bg-cloud antialiased;
-  }
-
-  /* Dark mode overrides */
-  html.dark body {
-    @apply bg-peak-800 text-cloud;
+    @apply font-body text-slate-800 bg-[#F4FBF7] antialiased min-h-screen selection:bg-emerald-200 selection:text-emerald-900;
   }
 
   /* Focus-visible styles — accessible keyboard navigation */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-terraced-500;
+    @apply outline-2 outline-offset-2 outline-emerald-500;
   }
 
-  /* Reduced motion — respect user preferences */
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -46,19 +42,19 @@
     }
   }
 
-  /* Smooth scrollbar styling */
+  /* Custom smooth scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    @apply bg-emerald-50/50;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-peak-200 rounded-full;
+    @apply bg-emerald-300 rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-peak-300;
+    @apply bg-emerald-400;
   }
 }
 
@@ -72,58 +68,54 @@
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    background: #52b788;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgb(27 58 75 / 35%);
-    color: #fff;
+    background: #059669;
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+    color: #ffffff;
     cursor: pointer;
     font-size: 22px;
     line-height: 1;
+    transition: transform 0.2s ease, background-color 0.2s ease;
   }
 
   .leaflet-municipality-marker:hover {
-    background: #2d6a4f;
-    transform: scale(1.12);
+    background: #047857;
+    transform: scale(1.15);
   }
 
   /* Card patterns */
   .card {
-    @apply bg-white rounded-xl shadow-card border border-peak-100 transition-shadow duration-200;
+    @apply bg-white rounded-2xl shadow-card border border-emerald-100/80 transition-all duration-200;
   }
 
   .card-hover {
-    @apply hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200;
+    @apply hover:shadow-card-hover hover:border-emerald-200 hover:-translate-y-0.5 transition-all duration-200;
   }
 
   /* Glass effect for panels over maps */
   .glass-panel {
-    @apply backdrop-blur-md bg-white/90 border border-white/50 rounded-xl shadow-panel;
+    @apply backdrop-blur-md bg-white/95 border border-emerald-100 rounded-2xl shadow-panel;
   }
 
   /* Gradient hero text */
   .text-gradient {
-    @apply bg-gradient-himalaya bg-clip-text text-transparent;
-  }
-
-  /* Score/metric chip */
-  .score-chip {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent;
   }
 
   /* Navigation link */
   .nav-link {
-    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium
-           text-peak-500 hover:text-peak-700 hover:bg-peak-50
-           transition-colors duration-150;
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium
+           text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/70
+           transition-all duration-150;
   }
 
   .nav-link-active {
-    @apply text-terraced-600 bg-terraced-50 hover:bg-terraced-100 hover:text-terraced-700;
+    @apply text-emerald-800 bg-emerald-50 font-semibold border-l-4 border-emerald-600;
   }
 
   /* Section heading */
   .section-heading {
-    @apply font-display text-2xl md:text-3xl font-semibold text-peak-700;
+    @apply font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight;
   }
 
   /* Data table */
@@ -132,11 +124,11 @@
   }
 
   .data-table th {
-    @apply px-4 py-3 font-medium text-peak-500 bg-peak-50 border-b border-peak-100 uppercase tracking-wide text-xs;
+    @apply px-4 py-3 font-medium text-emerald-900 bg-emerald-50/70 border-b border-emerald-100 uppercase tracking-wide text-xs;
   }
 
   .data-table td {
-    @apply px-4 py-3 border-b border-peak-50 text-peak-700;
+    @apply px-4 py-3 border-b border-slate-100 text-slate-700;
   }
 
   .data-table tr:last-child td {
@@ -144,6 +136,6 @@
   }
 
   .data-table tr:hover td {
-    @apply bg-terraced-50/30;
+    @apply bg-emerald-50/40;
   }
 }

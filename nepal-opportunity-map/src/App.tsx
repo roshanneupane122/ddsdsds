@@ -14,7 +14,7 @@ export default function App() {
     location.pathname.startsWith('/admin/')
 
   return (
-    <div className="min-h-screen bg-cloud text-peak-700 font-body flex flex-col antialiased">
+    <div className="min-h-screen bg-[#F4FBF7] text-slate-800 font-body flex flex-col antialiased">
       {isDashboardRoute ? (
         <>
           <Header />

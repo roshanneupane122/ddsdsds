@@ -60,32 +60,32 @@ export const Modal = ({
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-peak-900/60 backdrop-blur-sm animate-fade-in" aria-hidden="true" />
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" aria-hidden="true" />
 
       {/* Panel */}
       <div
         className={[
-          'relative w-full bg-white rounded-xl2 shadow-panel animate-slide-up',
+          'relative w-full bg-white border border-emerald-100/90 rounded-2xl shadow-2xl animate-slide-up overflow-hidden',
           sizeClasses[size],
         ].join(' ')}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-peak-100">
+        <div className="flex items-start justify-between p-5 md:p-6 border-b border-emerald-100/80 bg-emerald-50/40">
           <div>
             {title && (
-              <h2 id="modal-title" className="font-display font-semibold text-lg text-peak-700">
+              <h2 id="modal-title" className="font-display font-bold text-xl text-slate-900">
                 {title}
               </h2>
             )}
             {description && (
-              <p id="modal-description" className="mt-1 text-sm text-peak-400">
+              <p id="modal-description" className="mt-1 text-xs text-slate-500 font-medium">
                 {description}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="ml-4 p-1.5 rounded-lg text-peak-400 hover:text-peak-600 hover:bg-peak-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terraced-400"
+            className="ml-4 p-1.5 rounded-xl text-slate-400 hover:text-emerald-700 hover:bg-emerald-100/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
             aria-label="Close modal"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -95,11 +95,11 @@ export const Modal = ({
         </div>
 
         {/* Body */}
-        <div className="p-5">{children}</div>
+        <div className="p-5 md:p-6">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex justify-end gap-3 px-5 pb-5 pt-2 border-t border-peak-100">
+          <div className="flex justify-end gap-3 px-5 md:px-6 pb-5 pt-3 border-t border-emerald-100/80 bg-emerald-50/20">
             {footer}
           </div>
         )}
@@ -151,6 +151,6 @@ export const ConfirmModal = ({
       </>
     }
   >
-    <p className="text-sm text-peak-600">{message}</p>
+    <p className="text-sm text-slate-600 font-medium">{message}</p>
   </Modal>
 )

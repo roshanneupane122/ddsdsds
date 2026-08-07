@@ -8,7 +8,7 @@ import html2canvas from 'html2canvas'
 export const ReportGenerator = () => {
   const { data: municipalitiesData } = useQuery({
     queryKey: ['municipalities', 'list'],
-    queryFn: () => municipalitiesApi.list(),
+    queryFn: () => municipalitiesApi.list({ limit: 200 }),
   })
   const municipalities = municipalitiesData?.data ?? []
 
@@ -77,19 +77,19 @@ export const ReportGenerator = () => {
   }
 
   return (
-    <Card padding="lg" className="space-y-6 max-w-2xl bg-white border border-peak-100 shadow-md">
+    <Card padding="lg" className="space-y-6 max-w-2xl bg-white border border-emerald-100 shadow-sm rounded-2xl">
       <div className="space-y-1">
-        <h3 className="font-semibold text-peak-700 text-lg font-display">Generate Investment & Profile Report</h3>
-        <p className="text-xs text-peak-400">Configure parameters for automated PDF synthesis or raw CSV dataset export.</p>
+        <h3 className="font-bold text-slate-900 text-lg font-display">Generate Investment & Profile Report</h3>
+        <p className="text-xs text-slate-500 font-medium">Configure parameters for automated PDF synthesis or raw CSV dataset export.</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-peak-600 mb-1">Target Municipality</label>
+          <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Municipality</label>
           <select
             value={activeMuniId}
             onChange={(e) => setSelectedMuniId(e.target.value)}
-            className="w-full px-3 py-2 bg-peak-50 border border-peak-200 rounded-lg text-xs font-medium text-peak-700 focus:outline-none focus:ring-2 focus:ring-terraced-400"
+            className="w-full px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
           >
             {municipalities.map((m) => (
               <option key={m.id} value={m.id}>
@@ -99,15 +99,15 @@ export const ReportGenerator = () => {
           </select>
         </div>
 
-        <div className="space-y-2 pt-2 border-t border-peak-100">
-          <label className="block text-xs font-medium text-peak-600">Include Sections</label>
-          <div className="flex items-center gap-4 text-xs text-peak-600">
+        <div className="space-y-2 pt-3 border-t border-emerald-100">
+          <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Include Report Sections</label>
+          <div className="flex items-center gap-6 text-xs text-slate-700 font-medium">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeRecs}
                 onChange={(e) => setIncludeRecs(e.target.checked)}
-                className="rounded border-peak-300 text-terraced-500 focus:ring-terraced-400"
+                className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
               />
               AI Recommendations Rationale
             </label>
@@ -116,7 +116,7 @@ export const ReportGenerator = () => {
                 type="checkbox"
                 checked={includeDemo}
                 onChange={(e) => setIncludeDemo(e.target.checked)}
-                className="rounded border-peak-300 text-terraced-500 focus:ring-terraced-400"
+                className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
               />
               Demographics Breakdown
             </label>
@@ -124,17 +124,17 @@ export const ReportGenerator = () => {
         </div>
       </div>
 
-      <div className="flex gap-3 pt-4 border-t border-peak-100">
-        <Button onClick={handleExportPDF} isLoading={isExporting} className="flex-1">
+      <div className="flex gap-3 pt-4 border-t border-emerald-100">
+        <Button onClick={handleExportPDF} isLoading={isExporting} className="flex-1 shadow-md shadow-emerald-600/20">
           Export PDF Report
         </Button>
-        <Button variant="outline" onClick={handleExportCSV}>
+        <Button variant="outline" onClick={handleExportCSV} className="border-emerald-200">
           Export CSV Data
         </Button>
       </div>
 
-      <p className="text-2xs text-peak-400 italic">
-        Note: Connected to FastAPI backend. Exporting report compiles active indicators.
+      <p className="text-2xs text-slate-500 font-mono italic">
+        Connected to FastAPI GIS Backend engine. PDF compilation extracts active indicator layers.
       </p>
     </Card>
   )

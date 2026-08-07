@@ -3,6 +3,7 @@ import type { PaginatedResponse } from '@/types'
 import {
   MOCK_MUNICIPALITIES,
   MOCK_MUNICIPALITY_DETAIL,
+  TILOTTAMA_MUNICIPALITY_DETAIL,
   MOCK_RECOMMENDATIONS,
   MOCK_REPORTS,
   MOCK_USER,
@@ -70,14 +71,16 @@ export const handlers = [
   http.get(`${BASE}/municipalities`, ({ request }) => {
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)
-    const pageSize = Number(url.searchParams.get('pageSize') ?? 10)
-    const search = url.searchParams.get('search') ?? ''
+    const pageSize = Number(url.searchParams.get('pageSize') ?? 20)
+    const search = url.searchParams.get('search') || url.searchParams.get('q') || ''
     const province = url.searchParams.get('province')
 
     let filtered = MOCK_MUNICIPALITIES
     if (search) {
+      const qLower = search.toLowerCase()
       filtered = filtered.filter(m =>
-        m.name.toLowerCase().includes(search.toLowerCase())
+        m.name.toLowerCase().includes(qLower) ||
+        m.district.toLowerCase().includes(qLower)
       )
     }
     if (province) {
@@ -89,16 +92,23 @@ export const handlers = [
 
   http.get(`${BASE}/municipalities/search`, ({ request }) => {
     const url = new URL(request.url)
-    const q = url.searchParams.get('q') ?? ''
-    const limit = Number(url.searchParams.get('limit') ?? 10)
+    const q = url.searchParams.get('q') || url.searchParams.get('search') || ''
+    const limit = Number(url.searchParams.get('limit') ?? 15)
+    const qLower = q.toLowerCase()
     const results = MOCK_MUNICIPALITIES
-      .filter(m => m.name.toLowerCase().includes(q.toLowerCase()))
+      .filter(m =>
+        m.name.toLowerCase().includes(qLower) ||
+        m.district.toLowerCase().includes(qLower)
+      )
       .slice(0, limit)
     return HttpResponse.json(results)
   }),
 
   http.get(`${BASE}/municipalities/:id`, ({ params }) => {
     const { id } = params
+    if (id === 'tilottama-mun' || id === 'tilottama') {
+      return HttpResponse.json(TILOTTAMA_MUNICIPALITY_DETAIL)
+    }
     if (id === MOCK_MUNICIPALITY_DETAIL.id) {
       return HttpResponse.json(MOCK_MUNICIPALITY_DETAIL)
     }

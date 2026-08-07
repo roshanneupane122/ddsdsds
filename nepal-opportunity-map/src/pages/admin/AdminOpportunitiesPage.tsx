@@ -128,69 +128,73 @@ export const AdminOpportunitiesPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Opportunity Management</h1>
-          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Create, edit, and delete business opportunities</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Opportunity Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Catalog of business sector investment opportunities</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
-            Add Opportunity
+        <div className="flex items-center gap-3">
+          <Button size="sm" className="text-xs shadow-md shadow-emerald-600/20" onClick={openCreate}>
+            + Add Opportunity
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
-            🔒 Admin Only
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-mono font-bold border border-emerald-200 uppercase tracking-wider">
+            🔒 Admin Console
           </div>
         </div>
       </div>
 
-      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
-        <Input placeholder="Search opportunities…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <Card padding="md" className="bg-white border border-emerald-100 shadow-sm">
+        <Input placeholder="Search opportunities by title, sector, or keyword…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </Card>
 
-      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-white text-sm font-display">Opportunity Catalog</h3>
-          <Badge variant="muted" size="sm">
-            {filtered.length} total
+      <Card padding="none" className="bg-white border border-emerald-100 shadow-sm overflow-hidden rounded-2xl">
+        <div className="p-4 md:p-5 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/40">
+          <h3 className="font-bold text-slate-900 text-sm font-display">Opportunity Catalog</h3>
+          <Badge variant="success" size="sm">
+            {filtered.length} OPPORTUNITIES TOTAL
           </Badge>
         </div>
 
         {isLoading && (
           <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-terraced-500" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
           </div>
         )}
 
-        {error && <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load opportunities.</div>}
+        {error && <div className="py-8 text-center text-xs text-red-500 font-mono">Failed to load opportunities.</div>}
 
         {!isLoading && filtered.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-[#0A0C10] border-b border-white/5">
+              <thead className="bg-emerald-50/70 border-b border-emerald-100">
                 <tr>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Title</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Sector</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Investment</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Updated</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Title</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Sector</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Investment</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Updated</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-100">
                 {filtered.map((item) => (
-                  <tr key={item.opportunity_id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-white">{item.title}</div>
-                      <div className="text-slate-500 mt-1 line-clamp-2 font-mono text-[10px]">{item.description || 'No description provided.'}</div>
+                  <tr key={item.opportunity_id} className="hover:bg-emerald-50/40 transition-colors">
+                    <td className="px-4 py-3.5">
+                      <div className="font-bold text-slate-900 text-sm">{item.title}</div>
+                      <div className="text-slate-500 mt-1 line-clamp-2 text-xs font-normal">{item.description || 'No description provided.'}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 font-mono">{item.sector || 'Unspecified'}</td>
-                    <td className="px-4 py-3 text-slate-400 font-mono tabular-nums">
-                      {item.min_investment?.toLocaleString() || 'N/A'} - {item.max_investment?.toLocaleString() || 'N/A'}
+                    <td className="px-4 py-3.5">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100/90 text-emerald-900 uppercase tracking-wider border border-emerald-200">
+                        {item.sector || 'General'}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 font-mono">{item.updated_at.slice(0, 10)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 text-slate-700 font-mono tabular-nums font-bold">
+                      ${item.min_investment?.toLocaleString() || '0'} - ${item.max_investment?.toLocaleString() || 'N/A'}
+                    </td>
+                    <td className="px-4 py-3.5 text-slate-500 font-mono">{item.updated_at.slice(0, 10)}</td>
+                    <td className="px-4 py-3.5">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(item)}>
+                        <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => openEdit(item)}>
                           Edit
                         </Button>
-                        <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(item.opportunity_id)}>
+                        <Button variant="danger" size="sm" className="text-xs h-8" onClick={() => setDeletingId(item.opportunity_id)}>
                           Delete
                         </Button>
                       </div>
@@ -211,7 +215,7 @@ export const AdminOpportunitiesPage = () => {
         isOpen={editingId !== null}
         onClose={() => setEditingId(null)}
         title={editingId === 'new' ? 'Add Opportunity' : 'Edit Opportunity'}
-        description="Manage the catalog entry used by recommendation generation."
+        description="Manage opportunity details and capital expenditure targets."
         size="xl"
         footer={
           <>
@@ -219,7 +223,7 @@ export const AdminOpportunitiesPage = () => {
               Cancel
             </Button>
             <Button onClick={submit} isLoading={saveDisabled}>
-              Save
+              Save Opportunity
             </Button>
           </>
         }
@@ -228,14 +232,14 @@ export const AdminOpportunitiesPage = () => {
           <Input label="Title" value={formState.title} onChange={(e) => setFormState((p) => ({ ...p, title: e.target.value }))} />
           <Input label="Sector" value={formState.sector} onChange={(e) => setFormState((p) => ({ ...p, sector: e.target.value }))} />
           <Input
-            label="Minimum Investment"
+            label="Minimum Investment ($)"
             type="number"
             min={0}
             value={formState.min_investment}
             onChange={(e) => setFormState((p) => ({ ...p, min_investment: e.target.value }))}
           />
           <Input
-            label="Maximum Investment"
+            label="Maximum Investment ($)"
             type="number"
             min={0}
             value={formState.max_investment}
@@ -253,13 +257,13 @@ export const AdminOpportunitiesPage = () => {
             onChange={(e) => setFormState((p) => ({ ...p, estimated_investment_scale: e.target.value }))}
             className="md:col-span-2"
           />
-          <label className="md:col-span-2 space-y-1">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Description</span>
+          <label className="md:col-span-2 space-y-1.5">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Description</span>
             <textarea
               value={formState.description}
               onChange={(e) => setFormState((p) => ({ ...p, description: e.target.value }))}
-              rows={5}
-              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 font-mono"
+              rows={4}
+              className="w-full px-3.5 py-2.5 text-sm border border-emerald-200 rounded-xl bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 font-medium"
             />
           </label>
         </div>
@@ -269,8 +273,8 @@ export const AdminOpportunitiesPage = () => {
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
         onConfirm={() => deletingId && deleteMutation.mutate(deletingId)}
-        title="Delete opportunity"
-        message="This will permanently remove the opportunity entry."
+        title="Delete Opportunity"
+        message="This will permanently delete this opportunity catalog entry."
         confirmLabel="Delete"
         isDangerous
         isLoading={deleteMutation.isPending}

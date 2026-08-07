@@ -13,17 +13,17 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-peak-100 text-peak-700',
-  success: 'bg-terraced-100 text-terraced-700',
-  warning: 'bg-saffron-100 text-saffron-700',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-mist-100 text-mist-700',
-  muted: 'bg-gray-100 text-gray-500',
+  default: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+  success: 'bg-emerald-100/90 text-emerald-900 border border-emerald-300/80 font-bold',
+  warning: 'bg-amber-50 text-amber-800 border border-amber-200/80',
+  danger: 'bg-red-50 text-red-700 border border-red-200/80',
+  info: 'bg-teal-50 text-teal-800 border border-teal-200/80',
+  muted: 'bg-slate-100 text-slate-700 border border-slate-200',
 }
 
 const sizeClasses: Record<BadgeSize, string> = {
-  sm: 'px-2 py-0.5 text-2xs',
-  md: 'px-2.5 py-1 text-xs',
+  sm: 'px-2 py-0.5 text-2xs font-semibold tracking-wide',
+  md: 'px-2.5 py-1 text-xs font-semibold tracking-wide',
 }
 
 export const Badge = ({
@@ -35,7 +35,7 @@ export const Badge = ({
 }: BadgeProps) => (
   <span
     className={[
-      'inline-flex items-center gap-1.5 font-medium rounded-full',
+      'inline-flex items-center gap-1.5 rounded-full uppercase font-mono tracking-wider',
       variantClasses[variant],
       sizeClasses[size],
       className,
@@ -45,7 +45,7 @@ export const Badge = ({
   >
     {dot && (
       <span
-        className="w-1.5 h-1.5 rounded-full bg-current"
+        className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"
         aria-hidden="true"
       />
     )}

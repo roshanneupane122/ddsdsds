@@ -31,12 +31,12 @@ export const AdminRecommendationsPage = () => {
 
   const { data: recommendations = [], isLoading, error } = useQuery({
     queryKey: ['admin-recommendations'],
-    queryFn: () => recommendationsApi.list({ limit: 100 }),
+    queryFn: () => recommendationsApi.list({ limit: 100 }).then((r) => r.data),
   })
 
   const { data: municipalities = [] } = useQuery({
     queryKey: ['admin-recommendations-municipalities'],
-    queryFn: () => municipalitiesApi.list({ limit: 100 }),
+    queryFn: () => municipalitiesApi.list({ limit: 100 }).then((r) => r.data),
   })
 
   const { data: opportunities = [] } = useQuery({
@@ -47,7 +47,7 @@ export const AdminRecommendationsPage = () => {
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return recommendations.filter(
-      (item) =>
+      (item: Recommendation) =>
         item.title.toLowerCase().includes(q) ||
         item.municipalityName.toLowerCase().includes(q) ||
         item.summary.toLowerCase().includes(q)
@@ -131,71 +131,71 @@ export const AdminRecommendationsPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Recommendation Management</h1>
-          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Create, edit, and delete AI recommendation records</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Recommendation Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">AI algorithmic investment recommendation entries</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
-            Add Recommendation
+        <div className="flex items-center gap-3">
+          <Button size="sm" className="text-xs shadow-md shadow-emerald-600/20" onClick={openCreate}>
+            + Add Recommendation
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
-            🔒 Admin Only
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-mono font-bold border border-emerald-200 uppercase tracking-wider">
+            🔒 Admin Console
           </div>
         </div>
       </div>
 
-      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
-        <Input placeholder="Search recommendations…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <Card padding="md" className="bg-white border border-emerald-100 shadow-sm">
+        <Input placeholder="Search recommendations by title, municipality, or explanation…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </Card>
 
-      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-white text-sm font-display">Recommendation Catalog</h3>
-          <Badge variant="muted" size="sm">
-            {filtered.length} total
+      <Card padding="none" className="bg-white border border-emerald-100 shadow-sm overflow-hidden rounded-2xl">
+        <div className="p-4 md:p-5 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/40">
+          <h3 className="font-bold text-slate-900 text-sm font-display">Recommendation Catalog</h3>
+          <Badge variant="success" size="sm">
+            {filtered.length} RECOMMENDATIONS GENERATED
           </Badge>
         </div>
 
         {isLoading && (
           <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-terraced-500" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
           </div>
         )}
 
-        {error && <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load recommendations.</div>}
+        {error && <div className="py-8 text-center text-xs text-red-500 font-mono">Failed to load recommendations.</div>}
 
         {!isLoading && filtered.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-[#0A0C10] border-b border-white/5">
+              <thead className="bg-emerald-50/70 border-b border-emerald-100">
                 <tr>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Opportunity</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Municipality</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Score</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Model</th>
-                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Opportunity</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Municipality</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Score</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Model</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-100">
                 {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-white">{item.title}</div>
-                      <div className="text-slate-500 mt-1 line-clamp-2 font-mono text-[10px]">{item.summary}</div>
+                  <tr key={item.id} className="hover:bg-emerald-50/40 transition-colors">
+                    <td className="px-4 py-3.5">
+                      <div className="font-bold text-slate-900 text-sm">{item.title}</div>
+                      <div className="text-slate-500 mt-1 line-clamp-2 text-xs">{item.summary}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 font-mono">{item.municipalityName}</td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-terraced-500/10 text-terraced-400 border border-terraced-500/20 tabular-nums">
-                        {Math.round(item.confidenceScore * 100)}%
+                    <td className="px-4 py-3.5 font-bold text-emerald-900">{item.municipalityName}</td>
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 tabular-nums">
+                        {Math.round(item.confidenceScore * 100)}% Match
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 font-mono">{item.modelVersion || 'v1.0'}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 text-slate-600 font-mono font-medium">{item.modelVersion || 'v1.0'}</td>
+                    <td className="px-4 py-3.5">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(item)}>
+                        <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => openEdit(item)}>
                           Edit
                         </Button>
-                        <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(item.id)}>
+                        <Button variant="danger" size="sm" className="text-xs h-8" onClick={() => setDeletingId(item.id)}>
                           Delete
                         </Button>
                       </div>
@@ -216,7 +216,7 @@ export const AdminRecommendationsPage = () => {
         isOpen={editingId !== null}
         onClose={() => setEditingId(null)}
         title={editingId === 'new' ? 'Add Recommendation' : 'Edit Recommendation'}
-        description="Link a municipality and opportunity to a model-generated recommendation."
+        description="Link a municipality and opportunity to model-generated scores."
         size="xl"
         footer={
           <>
@@ -224,18 +224,18 @@ export const AdminRecommendationsPage = () => {
               Cancel
             </Button>
             <Button onClick={submit} isLoading={saveDisabled}>
-              Save
+              Save Recommendation
             </Button>
           </>
         }
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="space-y-1">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Municipality</span>
+          <label className="space-y-1.5">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Municipality</span>
             <select
               value={formState.municipality_id}
               onChange={(e) => setFormState((p) => ({ ...p, municipality_id: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
+              className="w-full px-3.5 py-2.5 text-sm border border-emerald-200 rounded-xl bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
             >
               <option value="">Select municipality</option>
               {municipalities.map((item) => (
@@ -245,12 +245,12 @@ export const AdminRecommendationsPage = () => {
               ))}
             </select>
           </label>
-          <label className="space-y-1">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Opportunity</span>
+          <label className="space-y-1.5">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Opportunity</span>
             <select
               value={formState.opportunity_id}
               onChange={(e) => setFormState((p) => ({ ...p, opportunity_id: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
+              className="w-full px-3.5 py-2.5 text-sm border border-emerald-200 rounded-xl bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
             >
               <option value="">Select opportunity</option>
               {opportunities.map((item) => (
@@ -261,7 +261,7 @@ export const AdminRecommendationsPage = () => {
             </select>
           </label>
           <Input
-            label="Suitability Score"
+            label="Suitability Score (0-100)"
             type="number"
             min={0}
             max={100}
@@ -273,13 +273,13 @@ export const AdminRecommendationsPage = () => {
             value={formState.model_version}
             onChange={(e) => setFormState((p) => ({ ...p, model_version: e.target.value }))}
           />
-          <label className="md:col-span-2 space-y-1">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Explanation</span>
+          <label className="md:col-span-2 space-y-1.5">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Explanation</span>
             <textarea
               value={formState.explanation}
               onChange={(e) => setFormState((p) => ({ ...p, explanation: e.target.value }))}
-              rows={6}
-              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 font-mono"
+              rows={5}
+              className="w-full px-3.5 py-2.5 text-sm border border-emerald-200 rounded-xl bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
             />
           </label>
         </div>
@@ -289,8 +289,8 @@ export const AdminRecommendationsPage = () => {
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
         onConfirm={() => deletingId && deleteMutation.mutate(deletingId)}
-        title="Delete recommendation"
-        message="This will permanently remove the recommendation record."
+        title="Delete Recommendation"
+        message="This will permanently delete this AI recommendation entry."
         confirmLabel="Delete"
         isDangerous
         isLoading={deleteMutation.isPending}

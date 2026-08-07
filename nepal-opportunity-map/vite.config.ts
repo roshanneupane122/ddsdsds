@@ -27,7 +27,13 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
-    port: 5173,
+    host: true,
+  port: 5173,
+  strictPort: true,
+
+  allowedHosts: [
+    "pert-mathilde-untheoretically.ngrok-free.dev",
+  ],
     proxy: {
       // Proxy all backend API routes to FastAPI to avoid CORS issues in dev
       '/auth': { target: 'http://127.0.0.1:8000', changeOrigin: true },

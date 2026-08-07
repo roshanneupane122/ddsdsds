@@ -157,103 +157,116 @@ export const AdminMunicipalitiesPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Municipality Management</h1>
-          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">View and audit all 753 local unit records</p>
+          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Municipality Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Search, view, and audit local unit GIS boundaries</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
-            Add Municipality
+        <div className="flex items-center gap-3">
+          <Button size="sm" className="text-xs shadow-md shadow-emerald-600/20" onClick={openCreate}>
+            + Add Municipality
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
-            🔒 Admin Only
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-mono font-bold border border-emerald-200 uppercase tracking-wider">
+            🔒 Admin Console
           </div>
         </div>
       </div>
 
-      {/* Search */}
-      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
-        <input
-          type="text"
-          placeholder="Search municipalities…"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-          className="w-full px-3 py-2 text-xs border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-500/50 bg-[#0A0C10] text-white placeholder:text-slate-600 font-mono"
-        />
+      {/* Search Input Bar */}
+      <Card padding="md" className="bg-white border border-emerald-100 shadow-sm">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search municipality or district by name (e.g. Pokhara, Kathmandu, Mustang)…"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
+            className="w-full pl-10 pr-4 py-2.5 text-xs border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white text-slate-900 placeholder:text-slate-400 font-medium"
+          />
+          <svg className="w-4 h-4 text-emerald-600 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-mono font-bold"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </Card>
 
       {/* Table */}
-      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-white text-sm font-display">Local Units</h3>
+      <Card padding="none" className="bg-white border border-emerald-100 shadow-sm overflow-hidden rounded-2xl">
+        <div className="p-4 md:p-5 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/40">
+          <h3 className="font-bold text-slate-900 text-sm font-display">Local Units</h3>
           {data && (
-            <Badge variant="muted" size="sm">
-              {data.total} total
+            <Badge variant="success" size="sm">
+              {data.total} LOCAL UNITS FOUND
             </Badge>
           )}
         </div>
 
         {isLoading && (
           <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-terraced-500" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
           </div>
         )}
 
         {error && (
-          <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load municipalities.</div>
+          <div className="py-8 text-center text-xs text-red-500 font-mono">Failed to load municipalities.</div>
         )}
 
         {data && !isLoading && (
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
-                <thead className="bg-[#0A0C10] border-b border-white/5">
+                <thead className="bg-emerald-50/70 border-b border-emerald-100">
                   <tr>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Name</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Type</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">District</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Province</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Population</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Agri Score</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Tourism Score</th>
-                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Name</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Type</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">District</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Province</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Population</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Agri Score</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Tourism Score</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-emerald-900 uppercase tracking-wider text-[10px]">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {data.data.map((m) => (
-                    <tr key={m.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="px-4 py-3 font-medium text-white">{m.name}</td>
-                      <td className="px-4 py-3 text-slate-400 capitalize font-mono">{m.type.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-slate-400 font-mono">{m.district}</td>
-                      <td className="px-4 py-3 text-slate-400 font-mono">P{m.province}</td>
-                      <td className="px-4 py-3 text-slate-400 font-mono tabular-nums">{m.population.toLocaleString()}</td>
-                      <td className="px-4 py-3">
+                    <tr key={m.id} className="hover:bg-emerald-50/40 transition-colors">
+                      <td className="px-4 py-3.5 font-bold text-slate-900">{m.name}</td>
+                      <td className="px-4 py-3.5 text-slate-600 capitalize font-mono">{m.type.replace(/_/g, ' ')}</td>
+                      <td className="px-4 py-3.5 text-slate-600 font-mono font-medium">{m.district}</td>
+                      <td className="px-4 py-3.5 font-mono font-bold text-emerald-800">Province {m.province}</td>
+                      <td className="px-4 py-3.5 text-slate-600 font-mono tabular-nums font-medium">{m.population.toLocaleString()}</td>
+                      <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="w-16 h-2 bg-emerald-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-terraced-500 rounded-full"
+                              className="h-full bg-emerald-600 rounded-full"
                               style={{ width: `${m.agricultureScore}%` }}
                             />
                           </div>
-                          <span className="text-slate-400 font-mono tabular-nums">{m.agricultureScore}</span>
+                          <span className="text-slate-700 font-mono tabular-nums font-bold">{m.agricultureScore}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="w-16 h-2 bg-teal-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-mist-500 rounded-full"
+                              className="h-full bg-teal-600 rounded-full"
                               style={{ width: `${m.tourismScore}%` }}
                             />
                           </div>
-                          <span className="text-slate-400 font-mono tabular-nums">{m.tourismScore}</span>
+                          <span className="text-slate-700 font-mono tabular-nums font-bold">{m.tourismScore}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(m)}>
+                          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => openEdit(m)}>
                             Edit
                           </Button>
                           <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(m.id)}>
@@ -268,9 +281,9 @@ export const AdminMunicipalitiesPage = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500 font-mono">
-              <span className="uppercase tracking-wider text-[10px]">
-                Page {page} of {Math.ceil(data.total / 15)}
+            <div className="p-4 border-t border-emerald-100 flex items-center justify-between text-xs text-slate-600 font-mono bg-emerald-50/20">
+              <span className="uppercase tracking-wider text-[10px] font-bold text-slate-700">
+                Page {page} of {Math.max(1, Math.ceil(data.total / 15))}
               </span>
               <div className="flex gap-2">
                 <Button
@@ -278,7 +291,7 @@ export const AdminMunicipalitiesPage = () => {
                   size="sm"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7 disabled:opacity-30"
+                  className="text-xs h-7 disabled:opacity-30"
                 >
                   ← Prev
                 </Button>
@@ -287,7 +300,7 @@ export const AdminMunicipalitiesPage = () => {
                   size="sm"
                   disabled={!data.hasNext}
                   onClick={() => setPage((p) => p + 1)}
-                  className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7 disabled:opacity-30"
+                  className="text-xs h-7 disabled:opacity-30"
                 >
                   Next →
                 </Button>
@@ -301,7 +314,7 @@ export const AdminMunicipalitiesPage = () => {
         isOpen={editingId !== null}
         onClose={() => setEditingId(null)}
         title={editingId === 'new' ? 'Add Municipality' : 'Edit Municipality'}
-        description="Save the core municipality fields and its GeoJSON boundary."
+        description="Save municipality profile data and GeoJSON spatial boundary."
         size="xl"
         footer={
           <>
@@ -309,7 +322,7 @@ export const AdminMunicipalitiesPage = () => {
               Cancel
             </Button>
             <Button onClick={submit} isLoading={saveDisabled}>
-              Save
+              Save Municipality
             </Button>
           </>
         }
@@ -326,15 +339,15 @@ export const AdminMunicipalitiesPage = () => {
             value={formState.total_population}
             onChange={(e) => setFormState((p) => ({ ...p, total_population: e.target.value }))}
           />
-          <label className="md:col-span-2 space-y-1">
-            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">GeoJSON Boundary <span className="text-red-400">*</span></span>
+          <label className="md:col-span-2 space-y-1.5">
+            <span className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">GeoJSON Boundary <span className="text-red-500">*</span></span>
             <textarea
               value={formState.geom}
               onChange={(e) => setFormState((p) => ({ ...p, geom: e.target.value }))}
-              rows={10}
-              className={`w-full px-3 py-2 text-sm rounded-lg font-mono bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 ${formErrors.geom ? 'border border-red-500/50' : 'border border-white/10'}`}
+              rows={8}
+              className={`w-full px-3.5 py-2.5 text-xs rounded-xl font-mono bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 ${formErrors.geom ? 'border border-red-400' : 'border border-emerald-200'}`}
             />
-            {formErrors.geom ? <span className="block mt-1.5 text-xs text-red-400 font-mono">{formErrors.geom}</span> : <span className="block mt-1.5 text-xs text-slate-500 font-mono">Paste a valid GeoJSON Polygon or MultiPolygon with coordinates.</span>}
+            {formErrors.geom ? <span className="block mt-1 text-xs text-red-500 font-mono">{formErrors.geom}</span> : <span className="block mt-1 text-xs text-slate-500 font-mono">Paste valid GeoJSON Polygon or MultiPolygon object.</span>}
           </label>
         </div>
       </Modal>
@@ -343,8 +356,8 @@ export const AdminMunicipalitiesPage = () => {
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
         onConfirm={() => deletingId && deleteMutation.mutate(deletingId)}
-        title="Delete municipality"
-        message="This will remove the municipality record and its associated data."
+        title="Delete Municipality"
+        message="This will permanently delete this municipality record and associated analytical metrics."
         confirmLabel="Delete"
         isDangerous
         isLoading={deleteMutation.isPending}

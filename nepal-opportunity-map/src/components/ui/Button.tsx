@@ -13,21 +13,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-terraced-500 text-white hover:bg-terraced-600 active:bg-terraced-700 shadow-sm focus-visible:ring-terraced-400',
+    'bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20 active:scale-[0.98] focus-visible:ring-emerald-500',
   secondary:
-    'bg-peak-700 text-white hover:bg-peak-600 active:bg-peak-800 shadow-sm focus-visible:ring-peak-400',
+    'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/80 active:bg-emerald-200 focus-visible:ring-emerald-400',
   ghost:
-    'text-peak-600 hover:bg-peak-50 hover:text-peak-700 focus-visible:ring-peak-300',
+    'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 focus-visible:ring-emerald-400',
   danger:
-    'bg-red-500 text-white hover:bg-red-600 active:bg-red-700 shadow-sm focus-visible:ring-red-400',
+    'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm shadow-red-500/20 focus-visible:ring-red-400',
   outline:
-    'border border-peak-200 text-peak-600 hover:bg-peak-50 hover:border-peak-300 focus-visible:ring-peak-300',
+    'border border-emerald-200/90 text-emerald-800 bg-white hover:bg-emerald-50/70 hover:border-emerald-300 focus-visible:ring-emerald-400',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-xs gap-1.5',
-  md: 'px-4 py-2 text-sm gap-2',
-  lg: 'px-6 py-3 text-base gap-2.5',
+  sm: 'px-3 py-1.5 text-xs gap-1.5 rounded-xl font-medium',
+  md: 'px-4 py-2 text-sm gap-2 rounded-xl font-semibold',
+  lg: 'px-6 py-3 text-base gap-2.5 rounded-2xl font-bold',
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -52,9 +52,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={isDisabled}
         className={[
-          'inline-flex items-center justify-center font-medium rounded-lg',
-          'transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'inline-flex items-center justify-center transition-all duration-200',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+          'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none',
           variantClasses[variant],
           sizeClasses[size],
           className,

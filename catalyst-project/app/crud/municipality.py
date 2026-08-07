@@ -5,7 +5,7 @@ from geoalchemy2.functions import ST_AsGeoJSON, ST_Contains, ST_Point, ST_SetSRI
 from geoalchemy2.shape import from_shape
 from shapely.geometry import MultiPolygon as ShapelyMultiPolygon, shape
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.municipality import Municipality
@@ -43,6 +43,8 @@ async def get_municipality_by_name(
 async def get_municipalities(
     db: AsyncSession,
     *,
+    search: Optional[str] = None,
+    q: Optional[str] = None,
     district: Optional[str] = None,
     province: Optional[str] = None,
     skip: int = 0,
@@ -51,11 +53,22 @@ async def get_municipalities(
 
     query = select(Municipality)
 
+    term = (search or q or "").strip()
+    if term:
+        search_pattern = f"%{term}%"
+        query = query.where(
+            or_(
+                Municipality.name.ilike(search_pattern),
+                Municipality.district.ilike(search_pattern),
+                Municipality.province.ilike(search_pattern),
+            )
+        )
+
     if district:
-        query = query.where(Municipality.district == district)
+        query = query.where(Municipality.district.ilike(f"%{district.strip()}%"))
 
     if province:
-        query = query.where(Municipality.province == province)
+        query = query.where(Municipality.province.ilike(f"%{province.strip()}%"))
 
     query = (
         query.order_by(Municipality.name.asc())

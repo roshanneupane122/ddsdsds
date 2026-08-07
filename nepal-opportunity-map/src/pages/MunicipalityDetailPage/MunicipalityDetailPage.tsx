@@ -7,7 +7,7 @@ import { RecommendationCard } from '@/features/recommendations/RecommendationCar
 import { Button, SkeletonCard, EmptyState } from '@/components/ui'
 
 export const MunicipalityDetailPage = () => {
-  const { id = 'pokhara-metro' } = useParams<{ id: string }>()
+  const { id = 'tilottama-mun' } = useParams<{ id: string }>()
 
   const { data: detail, isLoading: isLoadingDetail } = useQuery({
     queryKey: ['municipalities', 'detail', id],
@@ -32,11 +32,11 @@ export const MunicipalityDetailPage = () => {
   if (!detail) {
     return (
       <EmptyState
-        title="Municipality Not Found"
-        description="The requested municipality profile could not be found or has not been ingested into the system yet."
+        title="Municipality Profile Not Found"
+        description="The requested local unit profile could not be retrieved from the spatial API."
         action={
-          <Link to="/map">
-            <Button>Back to Map Explorer</Button>
+          <Link to="/citizen/map">
+            <Button>Back to Map Explorer →</Button>
           </Link>
         }
       />
@@ -46,10 +46,10 @@ export const MunicipalityDetailPage = () => {
   return (
     <div className="space-y-8 pb-12">
       {/* Navigation Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-peak-400">
-        <Link to="/map" className="hover:text-peak-600">Map Explorer</Link>
+      <div className="flex items-center gap-2 text-xs text-slate-500 font-mono font-medium">
+        <Link to="/citizen/map" className="hover:text-emerald-700 font-bold">Map Explorer</Link>
         <span>/</span>
-        <span className="text-peak-700 font-semibold">{detail.name}</span>
+        <span className="text-slate-900 font-bold">{detail.name}</span>
       </div>
 
       {/* Main Resource Profile Component */}
@@ -57,13 +57,18 @@ export const MunicipalityDetailPage = () => {
 
       {/* AI Recommendations for this Municipality */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-t border-peak-200 pt-6">
+        <div className="flex items-center justify-between border-t border-emerald-100 pt-6">
           <div>
-            <h2 className="text-xl font-bold font-display text-peak-700">
-              AI Opportunity Recommendations for {detail.name}
+            <h2 className="text-xl font-bold font-display text-slate-900">
+              AI Opportunity Cards for {detail.name}
             </h2>
-            <p className="text-xs text-peak-500">Synthesized opportunities tailored to local asset profile.</p>
+            <p className="text-xs text-slate-600 font-medium">Algorithmic venture rationale tailored to local indicators and connectivity.</p>
           </div>
+          <Link to="/citizen/reports">
+            <Button size="sm" variant="outline" className="text-xs border-emerald-200">
+              📄 Export Profile PDF
+            </Button>
+          </Link>
         </div>
 
         {recommendations.length > 0 ? (
@@ -73,8 +78,8 @@ export const MunicipalityDetailPage = () => {
             ))}
           </div>
         ) : (
-          <div className="p-6 bg-white rounded-xl border border-peak-100 text-center text-xs text-peak-400">
-            No specific venture cards generated for this municipality yet. Check regional recommendations in the Opportunity Explorer.
+          <div className="p-8 bg-white rounded-2xl border border-emerald-100 text-center text-xs text-slate-500 font-mono">
+            No specific venture cards generated for this municipality yet. Explore regional opportunities in the Opportunity Explorer.
           </div>
         )}
       </section>

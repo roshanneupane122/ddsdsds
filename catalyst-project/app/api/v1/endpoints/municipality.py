@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Optional, Sequence
 
 from fastapi import APIRouter, Query, status
 
@@ -15,7 +15,7 @@ from app.services.municipality import (
     remove_municipality,
     update_existing_municipality,
 )
-from app.api.dependencies import AdminUser,CurrentUser
+from app.api.dependencies import AdminUser, CurrentUser
 router = APIRouter()
 
 
@@ -32,7 +32,7 @@ router = APIRouter()
 async def create_municipality(
     municipality_in: MunicipalityCreate,
     db: DBSession,
-    current_user:AdminUser,
+    current_user: AdminUser,
 ):
     """
     Create a new municipality.
@@ -44,8 +44,31 @@ async def create_municipality(
 
 
 # ==========================================================
-# List Municipalities
+# List Municipalities & Search
 # ==========================================================
+
+@router.get(
+    "/search",
+    response_model=Sequence[MunicipalityRead],
+    summary="Search Municipalities",
+)
+async def search_municipalities(
+    db: DBSession,
+    current_user: CurrentUser,
+    q: Optional[str] = Query(default=None, description="Search query string"),
+    search: Optional[str] = Query(default=None, description="Search term"),
+    limit: int = Query(default=20, ge=1, le=100),
+):
+    """
+    Search municipalities by query string.
+    """
+    return await list_municipalities(
+        db=db,
+        search=search or q,
+        q=q or search,
+        limit=limit,
+    )
+
 
 @router.get(
     "/",
@@ -54,7 +77,17 @@ async def create_municipality(
 )
 async def get_all_municipalities(
     db: DBSession,
-    current_user:CurrentUser,
+    current_user: CurrentUser,
+    search: Optional[str] = Query(
+        default=None,
+        description="Search term for municipality name, district, or province",
+    ),
+    q: Optional[str] = Query(
+        default=None,
+        description="Search query string alias",
+    ),
+    district: Optional[str] = Query(default=None, description="Filter by district"),
+    province: Optional[str] = Query(default=None, description="Filter by province"),
     skip: int = Query(
         default=0,
         ge=0,
@@ -63,15 +96,19 @@ async def get_all_municipalities(
     limit: int = Query(
         default=20,
         ge=1,
-        le=100,
+        le=1000,
         description="Maximum number of municipalities to return",
     ),
 ):
     """
-    Retrieve a paginated list of municipalities.
+    Retrieve a paginated list of municipalities with optional search filtering.
     """
     return await list_municipalities(
         db=db,
+        search=search,
+        q=q,
+        district=district,
+        province=province,
         skip=skip,
         limit=limit,
     )

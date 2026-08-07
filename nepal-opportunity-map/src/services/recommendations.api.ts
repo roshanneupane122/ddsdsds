@@ -7,7 +7,6 @@ import type {
   RecommendationFilter,
   ConfidenceLevel,
   OpportunityCategory,
-  ProvinceNumber,
 } from '@/types'
 
 // Transformer for Backend AIRecommendationRead/Detail -> Frontend Recommendation
