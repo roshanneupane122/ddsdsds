@@ -82,9 +82,9 @@ export const Sidebar = () => {
   return (
     <aside
       className={[
-        'flex flex-col border-r transition-all duration-300 ease-in-out',
+        'flex flex-col border-r border-white/5 transition-all duration-300 ease-in-out',
         'fixed left-0 top-16 bottom-0 z-30 overflow-hidden',
-        isAdmin ? 'bg-peak-900 border-peak-700' : 'bg-white border-peak-100',
+        'bg-[#0D0F14]',
         isSidebarOpen ? 'w-60' : 'w-0 lg:w-16',
       ].join(' ')}
       aria-label="Main navigation"
@@ -95,13 +95,15 @@ export const Sidebar = () => {
           <div className="mb-6 px-2">
             {isAdmin ? (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" />
-                <p className="text-2xs uppercase tracking-widest font-semibold text-peak-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                <p className="text-[10px] uppercase tracking-[0.2em] font-mono font-semibold text-slate-500">
                   Admin Panel
                 </p>
               </div>
             ) : (
-              <p className="text-2xs uppercase tracking-widest font-semibold text-peak-400">Navigation</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-mono font-semibold text-slate-500">
+                Navigation
+              </p>
             )}
           </div>
         )}
@@ -116,21 +118,21 @@ export const Sidebar = () => {
                 key={item.to}
                 to={item.to}
                 className={[
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium',
                   isAdmin
                     ? isActive
-                      ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                      : 'text-peak-400 hover:text-peak-200 hover:bg-peak-700/50'
+                      ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_12px_rgba(239,68,68,0.08)]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
                     : isActive
-                      ? 'nav-link-active nav-link'
-                      : 'nav-link',
+                      ? 'bg-terraced-500/10 text-terraced-400 border border-terraced-500/20 shadow-[0_0_12px_rgba(20,184,166,0.08)]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/[0.04] border border-transparent',
                   !isSidebarOpen ? 'justify-center px-2' : '',
                 ].join(' ')}
                 title={!isSidebarOpen ? item.label : undefined}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {item.icon}
-                {isSidebarOpen && <span>{item.label}</span>}
+                {isSidebarOpen && <span className="tracking-tight">{item.label}</span>}
               </Link>
             )
           })}
@@ -138,36 +140,38 @@ export const Sidebar = () => {
       </div>
 
       {/* User section */}
-      <div className={`p-3 border-t ${isAdmin ? 'border-peak-700' : 'border-peak-100'}`}>
+      <div className="p-3 border-t border-white/5">
         {isAuthenticated && user ? (
           <div className={`flex items-center gap-2.5 ${!isSidebarOpen ? 'justify-center' : ''}`}>
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isAdmin ? 'bg-red-500/20 text-red-300' : 'bg-terraced-100 text-terraced-700'
+              className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${
+                isAdmin
+                  ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                  : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
               }`}
             >
-              <span className="text-xs font-semibold">
+              <span className="text-xs font-bold font-mono">
                 {(user.name || user.email || 'U').charAt(0).toUpperCase()}
               </span>
             </div>
             {isSidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className={`text-xs font-medium truncate ${isAdmin ? 'text-peak-200' : 'text-peak-700'}`}>
+                <p className="text-xs font-medium truncate text-white tracking-tight">
                   {user.name || user.email}
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-0.5">
                   <span
-                    className={`text-2xs font-semibold px-1.5 py-0.5 rounded ${
-                      isAdmin ? 'bg-red-500/20 text-red-300' : 'bg-terraced-100 text-terraced-600'
+                    className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider border ${
+                      isAdmin
+                        ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                        : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
                     }`}
                   >
                     {user.role}
                   </span>
                   <button
                     onClick={handleLogout}
-                    className={`text-2xs transition-colors ${
-                      isAdmin ? 'text-peak-400 hover:text-red-400' : 'text-peak-400 hover:text-red-500'
-                    }`}
+                    className="text-[10px] font-mono text-slate-500 hover:text-red-400 transition-colors uppercase tracking-wider"
                   >
                     Logout
                   </button>
@@ -178,7 +182,7 @@ export const Sidebar = () => {
         ) : (
           isSidebarOpen && (
             <Link to="/login">
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent">
                 Sign in
               </Button>
             </Link>

@@ -131,26 +131,26 @@ export const AdminRecommendationsPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-peak-800">Recommendation Management</h1>
-          <p className="text-xs text-peak-400 mt-1">Create, edit, and delete AI recommendation records</p>
+          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Recommendation Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Create, edit, and delete AI recommendation records</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs" onClick={openCreate}>
+          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
             Add Recommendation
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
             🔒 Admin Only
           </div>
         </div>
       </div>
 
-      <Card padding="md" className="bg-white border border-peak-100 shadow-xs">
+      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
         <Input placeholder="Search recommendations…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </Card>
 
-      <Card padding="none" className="bg-white border border-peak-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-peak-100 flex items-center justify-between">
-          <h3 className="font-semibold text-peak-800 text-sm">Recommendation Catalog</h3>
+      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
+        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+          <h3 className="font-semibold text-white text-sm font-display">Recommendation Catalog</h3>
           <Badge variant="muted" size="sm">
             {filtered.length} total
           </Badge>
@@ -162,36 +162,40 @@ export const AdminRecommendationsPage = () => {
           </div>
         )}
 
-        {error && <div className="py-8 text-center text-xs text-red-500">Failed to load recommendations.</div>}
+        {error && <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load recommendations.</div>}
 
         {!isLoading && filtered.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-peak-50 border-b border-peak-100">
+              <thead className="bg-[#0A0C10] border-b border-white/5">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Opportunity</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Municipality</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Score</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Model</th>
-                  <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Actions</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Opportunity</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Municipality</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Score</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Model</th>
+                  <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-peak-50">
+              <tbody className="divide-y divide-white/5">
                 {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-peak-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-peak-800">{item.title}</div>
-                      <div className="text-peak-400 mt-1 line-clamp-2">{item.summary}</div>
+                      <div className="font-medium text-white">{item.title}</div>
+                      <div className="text-slate-500 mt-1 line-clamp-2 font-mono text-[10px]">{item.summary}</div>
                     </td>
-                    <td className="px-4 py-3 text-peak-500">{item.municipalityName}</td>
-                    <td className="px-4 py-3 text-peak-500">{Math.round(item.confidenceScore * 100)}%</td>
-                    <td className="px-4 py-3 text-peak-500">{item.modelVersion || 'v1.0'}</td>
+                    <td className="px-4 py-3 text-slate-400 font-mono">{item.municipalityName}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-terraced-500/10 text-terraced-400 border border-terraced-500/20 tabular-nums">
+                        {Math.round(item.confidenceScore * 100)}%
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-400 font-mono">{item.modelVersion || 'v1.0'}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => openEdit(item)}>
+                        <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(item)}>
                           Edit
                         </Button>
-                        <Button variant="danger" size="sm" className="text-xs" onClick={() => setDeletingId(item.id)}>
+                        <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(item.id)}>
                           Delete
                         </Button>
                       </div>
@@ -204,7 +208,7 @@ export const AdminRecommendationsPage = () => {
         )}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="py-12 text-center text-xs text-peak-400">No recommendations match your search.</div>
+          <div className="py-12 text-center text-xs text-slate-500 font-mono">No recommendations match your search.</div>
         )}
       </Card>
 
@@ -227,11 +231,11 @@ export const AdminRecommendationsPage = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="space-y-1">
-            <span className="block text-sm font-medium text-peak-600">Municipality</span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Municipality</span>
             <select
               value={formState.municipality_id}
               onChange={(e) => setFormState((p) => ({ ...p, municipality_id: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg"
+              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
             >
               <option value="">Select municipality</option>
               {municipalities.map((item) => (
@@ -242,11 +246,11 @@ export const AdminRecommendationsPage = () => {
             </select>
           </label>
           <label className="space-y-1">
-            <span className="block text-sm font-medium text-peak-600">Opportunity</span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Opportunity</span>
             <select
               value={formState.opportunity_id}
               onChange={(e) => setFormState((p) => ({ ...p, opportunity_id: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg"
+              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
             >
               <option value="">Select opportunity</option>
               {opportunities.map((item) => (
@@ -270,12 +274,12 @@ export const AdminRecommendationsPage = () => {
             onChange={(e) => setFormState((p) => ({ ...p, model_version: e.target.value }))}
           />
           <label className="md:col-span-2 space-y-1">
-            <span className="block text-sm font-medium text-peak-600">Explanation</span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Explanation</span>
             <textarea
               value={formState.explanation}
               onChange={(e) => setFormState((p) => ({ ...p, explanation: e.target.value }))}
               rows={6}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg"
+              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 font-mono"
             />
           </label>
         </div>

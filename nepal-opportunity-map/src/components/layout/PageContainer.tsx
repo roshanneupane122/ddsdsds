@@ -14,7 +14,7 @@ export const PageContainer = ({ children, fullWidth = false, className = '' }: P
   return (
     <main
       className={[
-        'min-h-screen pt-16 transition-all duration-300',
+        'min-h-screen pt-16 bg-[#0A0C10] transition-all duration-300',
         isSidebarOpen ? 'lg:pl-60' : 'lg:pl-16',
         className,
       ].join(' ')}
@@ -34,15 +34,15 @@ export const Footer = () => {
   return (
     <footer
       className={[
-        'bg-white border-t border-peak-100 py-4 px-6 transition-all duration-300',
+        'bg-[#08090D] border-t border-white/5 py-4 px-6 transition-all duration-300',
         isSidebarOpen ? 'lg:pl-60' : 'lg:pl-16',
       ].join(' ')}
     >
       <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p className="text-xs text-peak-400">
+        <p className="text-[10px] text-slate-600 font-mono uppercase tracking-wider">
           © {currentYear} Catalyst — Nepal Opportunity Map. All rights reserved.
         </p>
-        <p className="text-xs text-peak-300">
+        <p className="text-[10px] text-slate-700 font-mono uppercase tracking-wider">
           Municipality data: Nepal federal restructuring 2017 (753 local units)
         </p>
       </div>

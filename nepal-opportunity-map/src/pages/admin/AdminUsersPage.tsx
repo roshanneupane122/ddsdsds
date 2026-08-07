@@ -111,34 +111,34 @@ export const AdminUsersPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-peak-800">User Management</h1>
-          <p className="text-xs text-peak-400 mt-1">Manage all registered users and their roles</p>
+          <h1 className="text-2xl font-bold font-display text-white tracking-tight">User Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">Manage all registered users and their roles</p>
         </div>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
           🔒 Admin Only
         </div>
       </div>
 
       {/* Filters */}
-      <Card padding="md" className="bg-white border border-peak-100 shadow-xs">
+      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-3 py-2 text-xs border border-peak-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-400 bg-white text-peak-700 placeholder-peak-300"
+            className="flex-1 px-3 py-2 text-xs border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-500/50 bg-[#0A0C10] text-white placeholder:text-slate-600 font-mono"
           />
-          <div className="flex gap-1 bg-peak-50 p-1 rounded-lg border border-peak-100">
+          <div className="flex gap-1 bg-[#0A0C10] p-1 rounded-lg border border-white/5">
             {(['all', 'ADMIN', 'MUNICIPAL_OFFICIAL', 'CITIZEN'] as const).map((r) => (
               <button
                 key={r}
                 onClick={() => setRoleFilter(r)}
                 className={[
-                  'px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
+                  'px-3 py-1.5 rounded-md text-[10px] font-mono font-semibold transition-all uppercase tracking-wider',
                   roleFilter === r
-                    ? 'bg-white text-peak-800 shadow-sm border border-peak-100'
-                    : 'text-peak-400 hover:text-peak-700',
+                    ? 'bg-[#12141A] text-white shadow-sm border border-white/10'
+                    : 'text-slate-500 hover:text-slate-300 border border-transparent',
                 ].join(' ')}
               >
                 {r === 'all' ? 'All Roles' : roleLabel(r)}
@@ -149,63 +149,63 @@ export const AdminUsersPage = () => {
       </Card>
 
       {/* Users Table */}
-      <Card padding="none" className="bg-white border border-peak-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-peak-100 flex items-center justify-between">
-          <h3 className="font-semibold text-peak-800 text-sm">
+      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
+        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+          <h3 className="font-semibold text-white text-sm font-display">
             {filtered.length} user{filtered.length !== 1 ? 's' : ''} found
           </h3>
           <Badge variant="muted" size="sm">
             {users.length} total
           </Badge>
         </div>
-        {error && <div className="py-6 text-center text-xs text-red-500">Failed to load users.</div>}
+        {error && <div className="py-6 text-center text-xs text-red-400 font-mono">Failed to load users.</div>}
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-peak-50 border-b border-peak-100">
+            <thead className="bg-[#0A0C10] border-b border-white/5">
               <tr>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Name</th>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Email</th>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Role</th>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Joined</th>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Updated</th>
-                <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Actions</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Name</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Email</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Role</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Joined</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Updated</th>
+                <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-peak-50">
+            <tbody className="divide-y divide-white/5">
               {filtered.map((u) => (
-                <tr key={u.id} className="hover:bg-peak-50 transition-colors">
+                <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-terraced-100 flex items-center justify-center text-terraced-700 font-semibold text-xs flex-shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-terraced-500/10 border border-terraced-500/20 flex items-center justify-center text-terraced-400 font-bold text-xs flex-shrink-0 font-mono">
                         {u.name.charAt(0)}
                       </div>
-                      <span className="font-medium text-peak-800">{u.name}</span>
+                      <span className="font-medium text-white">{u.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-peak-500 font-mono">{u.email}</td>
+                  <td className="px-4 py-3 text-slate-400 font-mono">{u.email}</td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex px-2 py-0.5 rounded-full text-2xs font-semibold ${
+                      className={`inline-flex px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider border ${
                         u.role === 'ADMIN'
-                          ? 'bg-red-50 text-red-700 border border-red-200'
+                          ? 'bg-red-500/10 text-red-400 border-red-500/20'
                           : u.role === 'MUNICIPAL_OFFICIAL'
-                            ? 'bg-saffron-50 text-saffron-700 border border-saffron-200'
-                            : 'bg-terraced-50 text-terraced-700 border border-terraced-200'
+                            ? 'bg-saffron-500/10 text-saffron-400 border-saffron-500/20'
+                            : 'bg-terraced-500/10 text-terraced-400 border-terraced-500/20'
                       }`}
                     >
                       {roleLabel(u.role)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-peak-400">{formatDate(u.createdAt)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-slate-500 font-mono">{formatDate(u.createdAt)}</td>
+                  <td className="px-4 py-3 text-slate-500 font-mono">
                     {formatDate(u.updatedAt)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="text-xs" onClick={() => openEdit(u)}>
+                      <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(u)}>
                         Edit
                       </Button>
-                      <Button variant="danger" size="sm" className="text-xs" onClick={() => setDeletingUser(u)}>
+                      <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingUser(u)}>
                         Delete
                       </Button>
                     </div>
@@ -215,7 +215,7 @@ export const AdminUsersPage = () => {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div className="py-12 text-center text-xs text-peak-400">No users match your search.</div>
+            <div className="py-12 text-center text-xs text-slate-500 font-mono">No users match your search.</div>
           )}
         </div>
       </Card>
@@ -241,11 +241,11 @@ export const AdminUsersPage = () => {
           <Input label="Full Name" value={formState.name} onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value }))} />
           <Input label="Email" value={formState.email} onChange={(e) => setFormState((p) => ({ ...p, email: e.target.value }))} />
           <label className="space-y-1 md:col-span-2">
-            <span className="block text-sm font-medium text-peak-600">Role</span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">Role</span>
             <select
               value={formState.role}
               onChange={(e) => setFormState((p) => ({ ...p, role: e.target.value as AdminUserRole }))}
-              className="w-full px-3 py-2 text-sm border border-peak-200 rounded-lg"
+              className="w-full px-3 py-2 text-sm border border-white/10 rounded-lg bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50"
             >
               <option value="ADMIN">Admin</option>
               <option value="MUNICIPAL_OFFICIAL">Municipal Official</option>

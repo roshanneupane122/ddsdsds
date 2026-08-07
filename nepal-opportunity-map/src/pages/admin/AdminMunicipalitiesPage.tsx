@@ -157,21 +157,21 @@ export const AdminMunicipalitiesPage = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-peak-800">Municipality Management</h1>
-          <p className="text-xs text-peak-400 mt-1">View and audit all 753 local unit records</p>
+          <h1 className="text-2xl font-bold font-display text-white tracking-tight">Municipality Management</h1>
+          <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">View and audit all 753 local unit records</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" className="text-xs" onClick={openCreate}>
+          <Button size="sm" className="text-xs bg-terraced-600 hover:bg-terraced-500 text-white border-0 shadow-none h-8" onClick={openCreate}>
             Add Municipality
           </Button>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-500/10 text-red-400 text-[10px] font-mono font-semibold border border-red-500/20 uppercase tracking-wider">
             🔒 Admin Only
           </div>
         </div>
       </div>
 
       {/* Search */}
-      <Card padding="md" className="bg-white border border-peak-100 shadow-xs">
+      <Card padding="md" className="bg-[#12141A] border border-white/5 shadow-none">
         <input
           type="text"
           placeholder="Search municipalities…"
@@ -180,14 +180,14 @@ export const AdminMunicipalitiesPage = () => {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="w-full px-3 py-2 text-xs border border-peak-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-400 bg-white text-peak-700 placeholder-peak-300"
+          className="w-full px-3 py-2 text-xs border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-terraced-500/50 bg-[#0A0C10] text-white placeholder:text-slate-600 font-mono"
         />
       </Card>
 
       {/* Table */}
-      <Card padding="none" className="bg-white border border-peak-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-peak-100 flex items-center justify-between">
-          <h3 className="font-semibold text-peak-800 text-sm">Local Units</h3>
+      <Card padding="none" className="bg-[#12141A] border border-white/5 shadow-none overflow-hidden">
+        <div className="p-4 border-b border-white/5 flex items-center justify-between">
+          <h3 className="font-semibold text-white text-sm font-display">Local Units</h3>
           {data && (
             <Badge variant="muted" size="sm">
               {data.total} total
@@ -202,61 +202,61 @@ export const AdminMunicipalitiesPage = () => {
         )}
 
         {error && (
-          <div className="py-8 text-center text-xs text-red-500">Failed to load municipalities.</div>
+          <div className="py-8 text-center text-xs text-red-400 font-mono">Failed to load municipalities.</div>
         )}
 
         {data && !isLoading && (
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
-                <thead className="bg-peak-50 border-b border-peak-100">
+                <thead className="bg-[#0A0C10] border-b border-white/5">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Name</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Type</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">District</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Province</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Population</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Agri Score</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Tourism Score</th>
-                    <th className="text-left px-4 py-3 font-semibold text-peak-500 uppercase tracking-wider">Actions</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Name</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Type</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">District</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Province</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Population</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Agri Score</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Tourism Score</th>
+                    <th className="text-left px-4 py-3 font-mono font-semibold text-slate-500 uppercase tracking-widest text-[10px]">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-peak-50">
+                <tbody className="divide-y divide-white/5">
                   {data.data.map((m) => (
-                    <tr key={m.id} className="hover:bg-peak-50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-peak-800">{m.name}</td>
-                      <td className="px-4 py-3 text-peak-500 capitalize">{m.type.replace(/_/g, ' ')}</td>
-                      <td className="px-4 py-3 text-peak-500">{m.district}</td>
-                      <td className="px-4 py-3 text-peak-500">P{m.province}</td>
-                      <td className="px-4 py-3 text-peak-500">{m.population.toLocaleString()}</td>
+                    <tr key={m.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-4 py-3 font-medium text-white">{m.name}</td>
+                      <td className="px-4 py-3 text-slate-400 capitalize font-mono">{m.type.replace(/_/g, ' ')}</td>
+                      <td className="px-4 py-3 text-slate-400 font-mono">{m.district}</td>
+                      <td className="px-4 py-3 text-slate-400 font-mono">P{m.province}</td>
+                      <td className="px-4 py-3 text-slate-400 font-mono tabular-nums">{m.population.toLocaleString()}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-peak-100 rounded-full overflow-hidden">
+                          <div className="w-14 h-1.5 bg-white/5 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-terraced-400 rounded-full"
+                              className="h-full bg-terraced-500 rounded-full"
                               style={{ width: `${m.agricultureScore}%` }}
                             />
                           </div>
-                          <span className="text-peak-600">{m.agricultureScore}</span>
+                          <span className="text-slate-400 font-mono tabular-nums">{m.agricultureScore}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-peak-100 rounded-full overflow-hidden">
+                          <div className="w-14 h-1.5 bg-white/5 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-mist-400 rounded-full"
+                              className="h-full bg-mist-500 rounded-full"
                               style={{ width: `${m.tourismScore}%` }}
                             />
                           </div>
-                          <span className="text-peak-600">{m.tourismScore}</span>
+                          <span className="text-slate-400 font-mono tabular-nums">{m.tourismScore}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="text-xs" onClick={() => openEdit(m)}>
+                          <Button variant="outline" size="sm" className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7" onClick={() => openEdit(m)}>
                             Edit
                           </Button>
-                          <Button variant="danger" size="sm" className="text-xs" onClick={() => setDeletingId(m.id)}>
+                          <Button variant="danger" size="sm" className="text-xs h-7" onClick={() => setDeletingId(m.id)}>
                             Delete
                           </Button>
                         </div>
@@ -268,8 +268,8 @@ export const AdminMunicipalitiesPage = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-peak-100 flex items-center justify-between text-xs text-peak-500">
-              <span>
+            <div className="p-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span className="uppercase tracking-wider text-[10px]">
                 Page {page} of {Math.ceil(data.total / 15)}
               </span>
               <div className="flex gap-2">
@@ -278,7 +278,7 @@ export const AdminMunicipalitiesPage = () => {
                   size="sm"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="text-xs"
+                  className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7 disabled:opacity-30"
                 >
                   ← Prev
                 </Button>
@@ -287,7 +287,7 @@ export const AdminMunicipalitiesPage = () => {
                   size="sm"
                   disabled={!data.hasNext}
                   onClick={() => setPage((p) => p + 1)}
-                  className="text-xs"
+                  className="text-xs border-white/10 text-slate-300 hover:bg-white/5 hover:text-white bg-transparent h-7 disabled:opacity-30"
                 >
                   Next →
                 </Button>
@@ -327,14 +327,14 @@ export const AdminMunicipalitiesPage = () => {
             onChange={(e) => setFormState((p) => ({ ...p, total_population: e.target.value }))}
           />
           <label className="md:col-span-2 space-y-1">
-            <span className="block text-sm font-medium text-peak-600">GeoJSON Boundary <span className="text-red-400">*</span></span>
+            <span className="block text-xs font-mono font-medium text-slate-400 uppercase tracking-wider">GeoJSON Boundary <span className="text-red-400">*</span></span>
             <textarea
               value={formState.geom}
               onChange={(e) => setFormState((p) => ({ ...p, geom: e.target.value }))}
               rows={10}
-              className={`w-full px-3 py-2 text-sm rounded-lg font-mono ${formErrors.geom ? 'border border-red-400' : 'border border-peak-200'}`}
+              className={`w-full px-3 py-2 text-sm rounded-lg font-mono bg-[#0A0C10] text-white focus:outline-none focus:ring-2 focus:ring-terraced-500/50 ${formErrors.geom ? 'border border-red-500/50' : 'border border-white/10'}`}
             />
-            {formErrors.geom ? <span className="block mt-1.5 text-xs text-red-500">{formErrors.geom}</span> : <span className="block mt-1.5 text-xs text-peak-400">Paste a valid GeoJSON Polygon or MultiPolygon with coordinates.</span>}
+            {formErrors.geom ? <span className="block mt-1.5 text-xs text-red-400 font-mono">{formErrors.geom}</span> : <span className="block mt-1.5 text-xs text-slate-500 font-mono">Paste a valid GeoJSON Polygon or MultiPolygon with coordinates.</span>}
           </label>
         </div>
       </Modal>
