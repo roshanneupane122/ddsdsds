@@ -30,6 +30,12 @@ export function parseProvinceNumber(provinceStr: string | number): ProvinceNumbe
 function extractCenterFromGeom(geom: any): { lat: number; lng: number } {
   try {
     if (!geom || !geom.coordinates) return { lat: 28.2096, lng: 83.9856 }
+    if (geom.type === 'Point') {
+      return {
+        lat: geom.coordinates[1],
+        lng: geom.coordinates[0],
+      }
+    }
     let coords: number[][] = []
     if (geom.type === 'Polygon') {
       coords = geom.coordinates[0] || []
@@ -319,6 +325,17 @@ export const municipalitiesApi = {
       const match = (data || []).find((m) => m.municipality_id === id || m.id === id)
       if (match) return transformBackendMunicipalityDetail(match)
       throw new Error(`Municipality ${id} not found`)
+    }
+  },
+
+  /** Get complete intelligence profile for a municipality by ID */
+  getIntelligence: async (id: string): Promise<any> => {
+    try {
+      const { data } = await apiClient.get<any>(`${ENDPOINTS.municipalities.base}/${id}/intelligence`)
+      return data
+    } catch (err) {
+      console.error(`Failed to fetch intelligence for ${id}`, err)
+      throw err
     }
   },
 

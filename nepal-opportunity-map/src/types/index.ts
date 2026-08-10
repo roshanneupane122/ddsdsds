@@ -162,6 +162,8 @@ export type ChoroplethLayerId =
   | 'economic'
   | 'digital'
   | 'population'
+  | 'opportunity'
+  | 'gap'
 
 export interface MapLayer {
   id: ChoroplethLayerId

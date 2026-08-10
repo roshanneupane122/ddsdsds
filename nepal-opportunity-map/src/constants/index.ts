@@ -97,6 +97,22 @@ export const MAP_LAYERS: Record<
     colorScale: ['#fff5f0', '#fcc09b', '#f4734a', '#c23b22', '#7f0000'],
     dataKey: 'population',
   },
+  opportunity: {
+    id: 'opportunity',
+    label: 'Business Opportunity',
+    description: 'Calculated business opportunity score based on sector potentials and demand',
+    unit: 'Score (0–100)',
+    colorScale: ['#f7fedf', '#d7f7a7', '#8cd96a', '#43ad34', '#157f15'],
+    dataKey: 'economicScore', // Proxy field mapping in ListItem
+  },
+  gap: {
+    id: 'gap',
+    label: 'Infrastructure Gap',
+    description: 'Priority of infrastructure deficits (electricity, internet, healthcare access)',
+    unit: 'Deficit priority score',
+    colorScale: ['#fff5f5', '#ffe3e3', '#ffc9c9', '#ffa8a8', '#f03e3e'],
+    dataKey: 'infrastructureScore', // Inverted logic proxy
+  },
 }
 
 export const MAP_LAYER_LIST = Object.values(MAP_LAYERS)

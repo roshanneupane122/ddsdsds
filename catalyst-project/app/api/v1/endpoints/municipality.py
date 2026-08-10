@@ -1,6 +1,6 @@
 from typing import Optional, Sequence
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Query, status, HTTPException
 
 from app.api.dependencies import DBSession
 from app.schemas.municipality import (
@@ -15,6 +15,7 @@ from app.services.municipality import (
     remove_municipality,
     update_existing_municipality,
 )
+from app.services.analyze_service import analyze_service
 from app.api.dependencies import AdminUser, CurrentUser
 router = APIRouter()
 
@@ -135,6 +136,36 @@ async def get_municipality_by_id(
         db=db,
         municipality_id=municipality_id,
     )
+
+@router.get(
+    "/{municipality_id}/intelligence",
+    summary="Get Municipality Intelligence Profile",
+)
+async def get_municipality_intelligence(
+    municipality_id: str,
+    db: DBSession,
+    current_user: CurrentUser,
+):
+    """
+    Retrieve a comprehensive intelligence profile for a municipality.
+    """
+    municipality = await get_municipality(db=db, municipality_id=municipality_id)
+    if not municipality:
+        raise HTTPException(status_code=404, detail="Municipality not found")
+
+    intelligence = analyze_service.get_municipality_intelligence(municipality.name)
+    if not intelligence:
+        raise HTTPException(status_code=404, detail="Intelligence data not available for this municipality")
+        
+    # Return unified response
+    return {
+        "municipality_id": municipality.municipality_id,
+        "name": municipality.name,
+        "district": municipality.district,
+        "province": municipality.province,
+        **intelligence
+    }
+
 
 
 # ==========================================================
