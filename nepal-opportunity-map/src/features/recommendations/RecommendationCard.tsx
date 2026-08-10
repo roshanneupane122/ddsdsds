@@ -70,7 +70,7 @@ export const RecommendationCard = ({ recommendation }: { recommendation: Recomme
         size="lg"
         footer={
           <div className="flex justify-between w-full items-center">
-            <Link to={`/municipalities/${recommendation.municipalityId}`}>
+            <Link to={`/citizen/municipalities/${recommendation.municipalityId}`}>
               <Button variant="outline" size="sm">
                 View Municipal Profile →
               </Button>
