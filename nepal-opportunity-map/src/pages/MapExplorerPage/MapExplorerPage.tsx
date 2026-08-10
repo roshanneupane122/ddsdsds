@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { LeafletMapContainer, LayerControls, MunicipalityDetailPanel } from '@/features/map'
 import { Input, Badge, SkeletonCard } from '@/components/ui'
 import { municipalitiesApi } from '@/services/municipalities.api'
-import type { MunicipalityListItem } from '@/types'
+import type { MunicipalityListItem, ProvinceNumber } from '@/types'
 import { PROVINCES } from '@/constants'
 import { useFilterStore, useMapStore } from '@/store'
 
@@ -129,7 +129,7 @@ export const MapExplorerPage = () => {
             value={municipalityFilter.province ?? ''}
             onChange={(e) =>
               setMunicipalityFilter({
-                province: e.target.value ? (Number(e.target.value) as any) : null,
+                province: e.target.value ? (Number(e.target.value) as ProvinceNumber) : null,
               })
             }
             className="px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 shadow-2xs"

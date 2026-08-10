@@ -21,10 +21,12 @@ const ExclamationTriangleIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+import type { ScoreResponse } from '@/types'
+
 interface EvaluationResultModalProps {
   isOpen: boolean
   onClose: () => void
-  result: any // TODO: Type this strictly based on ScoreResponse
+  result: ScoreResponse | null
 }
 
 export const EvaluationResultModal: React.FC<EvaluationResultModalProps> = ({
@@ -134,7 +136,7 @@ export const EvaluationResultModal: React.FC<EvaluationResultModalProps> = ({
           <div>
             <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Consider These Alternatives</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {result.alternatives.map((alt: any, idx: number) => (
+              {result.alternatives.map((alt, idx) => (
                 <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center text-center">
                   <span className="font-bold text-slate-800 text-sm mb-2">{alt.business}</span>
                   <div className="mt-auto">

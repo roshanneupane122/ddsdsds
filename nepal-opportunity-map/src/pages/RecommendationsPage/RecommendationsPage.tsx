@@ -7,6 +7,8 @@ import { RecommendationCard, EvaluationResultModal } from '@/features/recommenda
 import { Input, SkeletonCard, EmptyState, Card, Button } from '@/components/ui'
 import { OPPORTUNITY_CATEGORIES, PROVINCES } from '@/constants'
 import { useFilterStore } from '@/store'
+import { AxiosError } from 'axios'
+import type { ScoreResponse, OpportunityCategory, ProvinceNumber } from '@/types'
 
 const SUPPORTED_BUSINESSES = [
   'Agro-vet Clinic', 'Bookstore', 'Boutique Hotel', 'Cafe', 'Cold Storage',
@@ -29,7 +31,7 @@ export const RecommendationsPage = () => {
   const recommendations = paginatedData?.data ?? []
 
   // Evaluation State
-  const [evaluationResult, setEvaluationResult] = useState<any>(null)
+  const [evaluationResult, setEvaluationResult] = useState<ScoreResponse | null>(null)
   const [isEvaluating, setIsEvaluating] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -53,8 +55,8 @@ export const RecommendationsPage = () => {
       })
       setEvaluationResult(res.data)
       setIsModalOpen(true)
-    } catch (err: any) {
-      if (err.statusCode === 404) {
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
         alert("Failed to evaluate. Make sure the municipality and ward exist in the dataset.")
       } else {
         alert("Error connecting to evaluation engine.")
@@ -137,7 +139,7 @@ export const RecommendationsPage = () => {
             value={recommendationFilter.category ?? ''}
             onChange={(e) =>
               setRecommendationFilter({
-                category: e.target.value ? (e.target.value as any) : null,
+                category: e.target.value ? (e.target.value as OpportunityCategory) : null,
               })
             }
             className="px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
@@ -154,7 +156,7 @@ export const RecommendationsPage = () => {
             value={recommendationFilter.province ?? ''}
             onChange={(e) =>
               setRecommendationFilter({
-                province: e.target.value ? (Number(e.target.value) as any) : null,
+                province: e.target.value ? (Number(e.target.value) as ProvinceNumber) : null,
               })
             }
             className="px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
