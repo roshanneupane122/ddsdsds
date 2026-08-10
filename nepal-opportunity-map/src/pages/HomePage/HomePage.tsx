@@ -95,9 +95,9 @@ export const HomePage = () => {
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-terraced-300 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-terraced-400" />
-                  Live GIS Spotlight: Pokhara Metro
+                  Live GIS Spotlight: Butwal Sub-Metro
                 </span>
-                <Badge variant="info">Province 4</Badge>
+                <Badge variant="info">Lumbini Province</Badge>
               </div>
 
               {/* Animated Territory Overlay Mock Visual */}
@@ -108,9 +108,9 @@ export const HomePage = () => {
                 </svg>
                 <div className="absolute z-10 text-center space-y-1">
                   <span className="px-3 py-1 bg-terraced-500/90 text-white font-semibold text-xs rounded-full shadow-lg">
-                    Highest Tourism & Agri Potential
+                    Highest Industrial & Trade Potential
                   </span>
-                  <p className="text-2xs text-peak-200">Phewa Basin Eco-Retreat Cluster</p>
+                  <p className="text-2xs text-peak-200">Rupandehi Agro-Industrial Corridor</p>
                 </div>
               </div>
 

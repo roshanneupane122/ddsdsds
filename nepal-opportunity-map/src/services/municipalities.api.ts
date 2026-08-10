@@ -62,23 +62,6 @@ function extractCenterFromGeom(geom: any): { lat: number; lng: number } {
 export function transformBackendMunicipality(m: any): MunicipalityListItem {
   let center = extractCenterFromGeom(m.geom)
   const provNum = parseProvinceNumber(m.province)
-  const nameLower = (m.name || '').toLowerCase()
-
-  if (nameLower.includes('tilottama')) {
-    center = { lat: 27.6186, lng: 83.4735 }
-  } else if (nameLower.includes('kathmandu')) {
-    center = { lat: 27.7172, lng: 85.3240 }
-  } else if (nameLower.includes('pokhara')) {
-    center = { lat: 28.2096, lng: 83.9856 }
-  } else if (nameLower.includes('butwal')) {
-    center = { lat: 27.7000, lng: 83.4500 }
-  } else if (nameLower.includes('biratnagar')) {
-    center = { lat: 26.4525, lng: 87.2718 }
-  } else if (nameLower.includes('lalitpur')) {
-    center = { lat: 27.6588, lng: 85.3247 }
-  } else if (nameLower.includes('bharatpur')) {
-    center = { lat: 27.6833, lng: 84.4333 }
-  }
 
   return {
     id: m.municipality_id || m.id,
@@ -235,88 +218,6 @@ export const municipalitiesApi = {
 
   /** Get full detail for a single municipality by ID */
   detail: async (id: string): Promise<MunicipalityDetail> => {
-    if (id === 'tilottama-mun' || id.toLowerCase().includes('tilottama')) {
-      return {
-        id: 'tilottama-mun',
-        name: 'Tilottama Municipality',
-        nameNepali: 'तिलोत्तमा नगरपालिका',
-        type: 'municipality',
-        district: 'Rupandehi',
-        province: 5,
-        population: 149409,
-        area: 126.19,
-        center: { lat: 27.6186, lng: 83.4735 },
-        agricultureScore: 88,
-        tourismScore: 68,
-        infrastructureScore: 85,
-        economicScore: 90,
-        digitalScore: 78,
-        boundingBox: { north: 27.68, south: 27.55, east: 83.55, west: 83.39 },
-        indicators: {
-          cultivatedLandPercent: 64.2,
-          majorCrops: ['Organic Rice', 'Wheat', 'Mustard', 'Fresh Vegetables', 'Dairy & Milk'],
-          irrigatedLandPercent: 82.5,
-          agriculturalYield: 4.8,
-          annualVisitors: 145000,
-          hotelCount: 65,
-          touristSites: 12,
-          avgStayDays: 2.4,
-          roadLengthKm: 420,
-          electrificationPercent: 99.5,
-          internetPenetrationPercent: 81.2,
-          cleanWaterAccessPercent: 94.5,
-          bankBranchCount: 38,
-          hospitalCount: 8,
-          gdpPerCapitaUSD: 2450,
-          registeredBusinesses: 6240,
-          exportValueUSD: 8500000,
-          unemploymentPercent: 5.4,
-        },
-        resources: {
-          naturalResources: ['Tinau River watershed', 'Sal forest belts', 'Flat fertile alluvial plain', 'High solar insolation zone'],
-          agriculturalProducts: ['Premium Paddy (Basmati)', 'Cold Storage Vegetables', 'Processed Milk & Ghee', 'Mustard Oil'],
-          touristAttractions: [
-            { name: 'Shankar Nagar Banbatika & Zoo', type: 'natural', rating: 4.7, annualVisitors: 85000 },
-            { name: 'Tilottama Green Corridor Park', type: 'natural', rating: 4.6, annualVisitors: 45000 },
-            { name: 'Buddha Circuit Gateway (Rupandehi)', type: 'cultural', rating: 4.5, annualVisitors: 30000 },
-          ],
-          industries: [
-            { name: 'Agro-Processing & Dairy Complex', sector: 'agriculture', employeeCount: 5200 },
-            { name: 'Cold Storage & Logistics Park', sector: 'trade', employeeCount: 1800 },
-            { name: 'Solar Energy & Green Tech Hub', sector: 'energy', employeeCount: 950 },
-          ],
-          infrastructure: [
-            { name: 'Siddharth Highway Feeder Corridor', type: 'road', status: 'operational' },
-            { name: 'Gautam Buddha International Airport Access (12km)', type: 'road', status: 'operational' },
-            { name: 'Tilottama Agro-Industrial Park', type: 'market', status: 'operational' },
-            { name: 'High-Capacity Cold Storage Hub', type: 'irrigation', status: 'operational' },
-          ],
-        },
-        demographics: {
-          totalPopulation: 149409,
-          malePopulation: 71716,
-          femalePopulation: 77693,
-          populationDensity: 1184,
-          literacyRate: 88.5,
-          urbanPopulationPercent: 82,
-          workingAgePopulationPercent: 68,
-          ageDistribution: [
-            { group: '0-14', percent: 22 },
-            { group: '15-64', percent: 68 },
-            { group: '65+', percent: 10 },
-          ],
-          ethnicGroups: [
-            { group: 'Chhetri & Brahmin', percent: 42 },
-            { group: 'Tharu & Magar', percent: 32 },
-            { group: 'Gurung', percent: 14 },
-            { group: 'Others', percent: 12 },
-          ],
-        },
-        opportunities: [],
-        lastUpdated: new Date().toISOString(),
-      }
-    }
-
     try {
       const { data } = await apiClient.get<any>(ENDPOINTS.municipalities.detail(id))
       return transformBackendMunicipalityDetail(data)
@@ -360,36 +261,18 @@ export const municipalitiesApi = {
       results = []
     }
 
-    // Ensure Tilottama Municipality is ALWAYS present when searching "tilottama"
-    if (qLower.includes('tilottama')) {
-      const hasTilottama = results.some((m) => m.name.toLowerCase().includes('tilottama'))
-      if (!hasTilottama) {
-        results.unshift({
-          id: 'tilottama-mun',
-          name: 'Tilottama Municipality',
-          nameNepali: 'तिलोत्तमा नगरपालिका',
-          type: 'municipality',
-          district: 'Rupandehi',
-          province: 5,
-          population: 149409,
-          area: 126.19,
-          center: { lat: 27.6186, lng: 83.4735 },
-          agricultureScore: 88,
-          tourismScore: 68,
-          infrastructureScore: 85,
-          economicScore: 90,
-          digitalScore: 78,
-        })
-      }
-    }
-
     return results.slice(0, 15)
   },
 
   /** Get municipality GeoJSON FeatureCollection */
-  geojson: async (): Promise<GeoJSON.FeatureCollection> => {
+  geojson: async (sector?: string, gap?: string): Promise<GeoJSON.FeatureCollection> => {
     try {
-      const { data } = await apiClient.get<GeoJSON.FeatureCollection>(ENDPOINTS.spatial.layers)
+      const { data } = await apiClient.get<GeoJSON.FeatureCollection>(ENDPOINTS.spatial.layers, {
+        params: {
+          ...(sector ? { sector } : {}),
+          ...(gap ? { gap } : {})
+        }
+      })
       return data
     } catch {
       // Fallback if backend isn't ready

@@ -1,81 +1,96 @@
 import { useEffect } from 'react'
-import { MapContainer, Popup, TileLayer, Circle, CircleMarker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet'
+import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MAP_LAYERS, NEPAL_CENTER, NEPAL_DEFAULT_ZOOM, PROVINCES } from '@/constants'
+import { MAP_LAYERS, NEPAL_CENTER, NEPAL_DEFAULT_ZOOM } from '@/constants'
 import { useFilterStore, useMapStore } from '@/store'
 import type { MunicipalityListItem } from '@/types'
-import { Link } from 'react-router-dom'
 
 interface LeafletMapContainerProps {
   municipalities: MunicipalityListItem[]
+  geojsonData?: GeoJSON.FeatureCollection | null
   selectedMunicipality?: MunicipalityListItem | null
   onSelectMunicipality: (municipality: MunicipalityListItem) => void
 }
 
-const FitSelectedMunicipality = ({ municipality }: { municipality: MunicipalityListItem | null }) => {
+const FitBoundsOnGeoJSON = ({ geojsonData, selectedMunicipality }: { geojsonData?: GeoJSON.FeatureCollection | null, selectedMunicipality?: MunicipalityListItem | null }) => {
   const map = useMap()
-
+  
   useEffect(() => {
-    if (municipality) {
-      map.flyTo([municipality.center.lat, municipality.center.lng], 12, { duration: 1.2 })
+    // If a municipality is selected, try to find its bounds in the geojson layer
+    if (selectedMunicipality && geojsonData && geojsonData.features) {
+      const feature = geojsonData.features.find((f: any) => f.properties?.id === selectedMunicipality.id)
+      if (feature) {
+        try {
+          const geoJsonLayer = L.geoJSON(feature as any)
+          map.flyToBounds(geoJsonLayer.getBounds(), { padding: [50, 50], duration: 1.2 })
+          return
+        } catch (e) {
+          // Fallback to center point if bounding box extraction fails
+          map.flyTo([selectedMunicipality.center.lat, selectedMunicipality.center.lng], 13, { duration: 1.2 })
+        }
+      } else {
+        map.flyTo([selectedMunicipality.center.lat, selectedMunicipality.center.lng], 13, { duration: 1.2 })
+      }
+    } else if (!selectedMunicipality && geojsonData && geojsonData.features && geojsonData.features.length > 0) {
+      // Zoom out to all features (e.g. province) if no specific selection
+      try {
+        const geoJsonLayer = L.geoJSON(geojsonData as any)
+        map.fitBounds(geoJsonLayer.getBounds(), { padding: [20, 20] })
+      } catch (e) {}
     }
-  }, [map, municipality])
+  }, [map, geojsonData, selectedMunicipality])
 
   return null
 }
 
 export const LeafletMapContainer = ({
   municipalities,
+  geojsonData,
   selectedMunicipality: selectedProp,
   onSelectMunicipality,
 }: LeafletMapContainerProps) => {
-  const { activeMapLayer, addToCompare, compareIds, sectorFilter, gapFilter } = useFilterStore()
+  const { activeMapLayer } = useFilterStore()
   const { selectedMunicipalityId, setSelectedMunicipality } = useMapStore()
 
   const selected = selectedProp || municipalities.find((m) => m.id === selectedMunicipalityId) || null
 
-  // Function to dynamically calculate styled circle marker properties (color & radius)
-  const getStyleForLayer = (municipality: MunicipalityListItem) => {
+  const getStyleForFeature = (feature: any) => {
+    const isSelected = selected && selected.id === feature.properties.id
+
+    const baseStyle = {
+      color: isSelected ? '#047857' : '#ffffff',
+      weight: isSelected ? 3 : 1,
+      fillOpacity: isSelected ? 0.9 : 0.75,
+      dashArray: isSelected ? '' : '3',
+    }
+
     if (!activeMapLayer) {
       return {
-        color: '#ffffff',
+        ...baseStyle,
         fillColor: '#10b981',
-        radius: 8,
-        weight: 1.5,
-        fillOpacity: 0.85
       }
     }
 
     const layer = MAP_LAYERS[activeMapLayer]
-    let value = 0
-
-    if (activeMapLayer === 'opportunity') {
-      // If a sector filter is active, adjust score dynamically based on sector match
-      let sectorBonus = 0
-      if (sectorFilter) {
-        // Mock sector-based dynamic scoring adjustments
-        const nameHash = (municipality.name.length + (sectorFilter.length * 3)) % 10
-        sectorBonus = nameHash * 4 - 20
-      }
-      value = Math.min(Math.max((municipality.economicScore || 50) + sectorBonus, 10), 100)
-    } else if (activeMapLayer === 'gap') {
-      // If a gap category filter is active, adjust gap score
-      let gapBonus = 0
-      if (gapFilter) {
-        const nameHash = (municipality.name.length + (gapFilter.length * 5)) % 10
-        gapBonus = nameHash * 5 - 25
-      }
-      // Gap score: lower infrastructure readiness = higher gap severity
-      value = Math.min(Math.max(100 - (municipality.infrastructureScore || 50) + gapBonus, 5), 100)
-    } else {
-      const key = layer.dataKey as keyof MunicipalityListItem
-      value = Number(municipality[key] || 0)
+    
+    // Map activeMapLayer to the appropriate property returned by the backend in spatial.py
+    const propertyMap: Record<string, string> = {
+      opportunity: 'opportunityScore',
+      gap: 'infrastructureGapScore',
+      population: 'population',
+      agriculture: 'agricultureScore',
+      tourism: 'tourismScore',
+      infrastructure: 'infrastructureScore',
+      economic: 'economicScore',
+      digital: 'digitalScore'
     }
 
-    // Determine color index (0-4) based on 0-100 score ranges
+    const key = propertyMap[activeMapLayer] || 'population'
+    const value = Number(feature.properties[key] || 0)
+
     let colorIndex = 0
     if (activeMapLayer === 'population') {
-      // Normalize population ranges dynamically relative to Rupandehi max population
       const normVal = Math.min((value / 200000) * 100, 100)
       colorIndex = Math.min(Math.floor(normVal / 20), 4)
     } else {
@@ -83,24 +98,52 @@ export const LeafletMapContainer = ({
     }
 
     const fillColor = layer.colorScale[colorIndex] || layer.colorScale[0]
-    
-    // Circle size scaling (radius from 6px to 22px)
-    let radius = 7 + (value / 100) * 15
-    if (activeMapLayer === 'population') {
-      radius = 6 + Math.min((value / 200000) * 18, 18)
-    }
 
     return {
-      color: '#ffffff',
+      ...baseStyle,
       fillColor,
-      radius,
-      weight: 1.5,
-      fillOpacity: 0.9
+    }
+  }
+
+  const onEachFeature = (feature: any, layer: L.Layer) => {
+    layer.on({
+      click: () => {
+        // Find corresponding municipality list item
+        const mun = municipalities.find(m => m.id === feature.properties.id)
+        if (mun) {
+          setSelectedMunicipality(mun.id)
+          onSelectMunicipality(mun)
+        }
+      },
+      mouseover: (e) => {
+        const layer = e.target as L.Path
+        layer.setStyle({
+          weight: 2,
+          color: '#34d399',
+          dashArray: '',
+          fillOpacity: 0.9
+        })
+        layer.bringToFront()
+      },
+      mouseout: (e) => {
+        const layer = e.target as L.Path
+        // Reset style
+        layer.setStyle(getStyleForFeature(feature))
+      }
+    })
+    
+    // Simple tooltip instead of bulky Popup (intelligence panel handles the rest)
+    if (feature.properties && feature.properties.name) {
+      layer.bindTooltip(
+        `<div class="font-bold text-xs">${feature.properties.name}</div>
+         <div class="text-[10px] text-gray-500">${feature.properties.district} District</div>`,
+        { sticky: true, className: 'bg-white/90 backdrop-blur-sm border-none shadow-md rounded-md p-2' }
+      )
     }
   }
 
   return (
-    <div className="relative w-full h-full min-h-[500px] rounded-2xl overflow-hidden border border-emerald-200 shadow-sm">
+    <div className="relative w-full h-full min-h-[500px] rounded-2xl overflow-hidden border border-emerald-200 shadow-sm z-0">
       <MapContainer
         center={[NEPAL_CENTER.lat, NEPAL_CENTER.lng]}
         zoom={NEPAL_DEFAULT_ZOOM}
@@ -112,113 +155,25 @@ export const LeafletMapContainer = ({
       >
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
-          url={import.meta.env.VITE_MAP_TILE_URL || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
+          url={import.meta.env.VITE_MAP_TILE_URL || 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'}
         />
-        <FitSelectedMunicipality municipality={selected} />
+        
+        <FitBoundsOnGeoJSON geojsonData={geojsonData} selectedMunicipality={selected} />
 
-        {/* Selected Municipality Boundary Highlight */}
-        {selected && (
-          <Circle
-            center={[selected.center.lat, selected.center.lng]}
-            radius={4500}
-            pathOptions={{
-              color: '#059669',
-              fillColor: '#10b981',
-              fillOpacity: 0.15,
-              weight: 2.5,
-              dashArray: '6, 6',
-            }}
+        {/* Render true GeoJSON boundaries instead of fake CircleMarkers */}
+        {geojsonData && geojsonData.features && (
+          <GeoJSON
+            key={`geojson-layer-${activeMapLayer}-${selected?.id}`} // Force re-render on style/selection change
+            data={geojsonData}
+            style={getStyleForFeature}
+            onEachFeature={onEachFeature}
           />
         )}
-
-        {/* Render circle markers for all municipalities */}
-        {municipalities.map((municipality) => {
-          const style = getStyleForLayer(municipality)
-          const isSelected = selected && selected.id === municipality.id
-          const isCompared = compareIds.includes(municipality.id)
-
-          return (
-            <CircleMarker
-              key={municipality.id}
-              center={[municipality.center.lat, municipality.center.lng]}
-              radius={isSelected ? style.radius + 4 : style.radius}
-              pathOptions={{
-                color: isSelected ? '#047857' : style.color,
-                fillColor: style.fillColor,
-                weight: isSelected ? 3.5 : style.weight,
-                fillOpacity: style.fillOpacity,
-              }}
-              eventHandlers={{
-                click: () => {
-                  setSelectedMunicipality(municipality.id)
-                  onSelectMunicipality(municipality)
-                },
-              }}
-            >
-              <Popup>
-                <div className="p-1 font-sans text-xs space-y-3 min-w-[240px]">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 leading-tight m-0">{municipality.name}</h3>
-                    <p className="text-[10px] text-slate-500 font-medium m-0 mt-0.5">
-                      {municipality.district} District · {PROVINCES.find(p => p.id === municipality.province)?.name ?? `Province ${municipality.province}`}
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-1.5 border-t border-slate-100 font-mono text-[10px]">
-                    <div>
-                      <span className="text-slate-400 block uppercase font-bold text-[8px] tracking-wide">Population</span>
-                      <span className="font-bold text-slate-800">{municipality.population.toLocaleString()}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block uppercase font-bold text-[8px] tracking-wide">Dev Index</span>
-                      <span className="font-bold text-emerald-700">{municipality.economicScore || 50}/100</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block uppercase font-bold text-[8px] tracking-wide">Agri Score</span>
-                      <span className="font-bold text-slate-800">{municipality.agricultureScore || 50}/100</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block uppercase font-bold text-[8px] tracking-wide">Opportunity</span>
-                      <span className="font-bold text-emerald-800">{municipality.economicScore || 65}/100</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
-                    <Link to={`/citizen/municipalities/${municipality.id}`}>
-                      <button className="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold transition-colors">
-                        View Intelligence Profile →
-                      </button>
-                    </Link>
-                    <div className="flex gap-1.5">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          addToCompare(municipality.id)
-                        }}
-                        disabled={isCompared}
-                        className={`flex-1 py-1 px-2 border rounded-lg text-[9px] font-bold transition-colors ${
-                          isCompared ? 'bg-slate-50 border-slate-200 text-slate-400' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        {isCompared ? 'In Compare' : '+ Compare'}
-                      </button>
-                      <Link to={`/citizen/dashboard?chatContext=${municipality.name}`} className="flex-1">
-                        <button className="w-full py-1 px-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[9px] font-bold transition-colors text-center">
-                          🤖 Ask AI
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </Popup>
-            </CircleMarker>
-          )
-        })}
       </MapContainer>
 
       {/* Dynamic Layer Legend */}
       {activeMapLayer && MAP_LAYERS[activeMapLayer] && (
-        <div className="absolute bottom-6 left-6 z-[1000] bg-white/95 backdrop-blur-md p-3.5 rounded-2xl text-xs space-y-2 shadow-xl max-w-xs border border-emerald-200">
+        <div className="absolute bottom-6 left-6 z-[1000] bg-white/95 backdrop-blur-md p-3.5 rounded-2xl text-xs space-y-2 shadow-xl max-w-xs border border-emerald-200 pointer-events-none">
           <p className="font-bold text-slate-900 font-display">{MAP_LAYERS[activeMapLayer].label}</p>
           <p className="text-slate-600 text-[10px] font-medium leading-normal">{MAP_LAYERS[activeMapLayer].description}</p>
           <div className="flex h-2.5 rounded-full overflow-hidden">
@@ -226,9 +181,12 @@ export const LeafletMapContainer = ({
               <div key={index} className="flex-1" style={{ backgroundColor: color }} />
             ))}
           </div>
-          <div className="flex justify-between text-[9px] text-slate-500 font-mono font-bold pt-0.5">
-            <span>Low ({MAP_LAYERS[activeMapLayer].unit})</span>
-            <span>High</span>
+          <div className="flex justify-between text-[8px] text-slate-500 font-mono font-bold pt-1 px-0.5">
+            <span className="text-center w-1/5">0-20<br/>V. Low</span>
+            <span className="text-center w-1/5">21-40<br/>Low</span>
+            <span className="text-center w-1/5">41-60<br/>Mod</span>
+            <span className="text-center w-1/5">61-80<br/>High</span>
+            <span className="text-center w-1/5">81-100<br/>V. High</span>
           </div>
         </div>
       )}

@@ -143,8 +143,8 @@ export const NEPAL_BOUNDS = {
   north: 30.447,
 } as const
 
-export const NEPAL_CENTER = { lat: 28.394, lng: 84.124 } as const
-export const NEPAL_DEFAULT_ZOOM = 6.5
+export const NEPAL_CENTER = { lat: 27.6333, lng: 83.4333 } as const
+export const NEPAL_DEFAULT_ZOOM = 7.5
 
 // ──────────────────────────────────────────────
 // Query keys — for TanStack Query cache management

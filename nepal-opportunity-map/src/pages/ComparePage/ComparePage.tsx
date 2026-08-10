@@ -97,7 +97,7 @@ export const ComparePage = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1">
             <Input
-              placeholder="Search municipality to add to comparison (e.g. Pokhara, Kathmandu, Ilam, Mustang)..."
+              placeholder="Search municipality to add to comparison (e.g. Butwal, Tilottama, Siddharthanagar, Lumbini)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               leftIcon={
