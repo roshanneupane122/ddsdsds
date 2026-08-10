@@ -33,6 +33,9 @@ export default defineConfig(({ mode }) => ({
     host: true,
     port: 5173,
     strictPort: true,
+    watch: {
+      usePolling: true,
+    },
 
     allowedHosts: [
       'pert-mathilde-untheoretically.ngrok-free.dev',

@@ -20,9 +20,9 @@ const StatCard = ({
   sub: string
 }) => (
   <Card padding="md" className="bg-white border border-emerald-100/90 shadow-sm space-y-3 hover:border-emerald-300 transition-all">
-    <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">{label}</p>
+    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">{label}</p>
     <div className="flex items-baseline justify-between gap-2">
-      <span className="text-2xl font-extrabold font-display text-slate-900 tabular-nums tracking-tight">{value}</span>
+      <span className="text-2xl font-extrabold text-slate-900 tracking-tight">{value}</span>
       <Badge variant={badgeVariant} size="sm" className="shrink-0">
         {badge}
       </Badge>
