@@ -22,6 +22,7 @@ export const ENDPOINTS = {
 
   // ── Municipalities ─────────────────────────────────────────
   municipalities: {
+    base: '/municipalities',
     list: '/municipalities/',
     detail: (id: string) => `/municipalities/${id}`,
     create: '/municipalities/',

@@ -230,4 +230,98 @@ class AnalyzeService:
             "overall_assessment": "Critical Investment Needed" if len([g for g in gaps if g['severity'] == 'High']) > 0 else "Adequate"
         }
 
+    def get_municipality_intelligence(self, municipality_name: str) -> Dict[str, Any]:
+        """
+        Builds a comprehensive intelligence profile for the municipality by aggregating ward data.
+        """
+        if ml_service.ward_data is None:
+            return None
+            
+        muni_df = ml_service.ward_data[ml_service.ward_data['municipality_name'].str.lower() == municipality_name.lower()]
+        if muni_df.empty:
+            return None
+            
+        # Aggregate data
+        agg = muni_df.mean(numeric_only=True).to_dict()
+        agg['population'] = int(muni_df['population'].sum())
+        agg['households'] = int(muni_df['households'].sum())
+        
+        # Development Index
+        dev_overall = min(max(agg.get('development_index', 50), 0), 100)
+        economic = min(max((agg.get('average_income_npr', 10000) / 200) + (agg.get('business_density', 5) * 5), 0), 100)
+        infrastructure = min(max((agg.get('electricity_access_pct', 50) + agg.get('internet_access_pct', 50) + agg.get('water_access_pct', 50)) / 3, 0), 100)
+        social = min(max(100 - (agg.get('hospital_distance_km', 5) * 5) - (agg.get('school_distance_km', 2) * 10), 0), 100)
+        accessibility = min(max(100 - (agg.get('road_distance_km', 2) * 10) - (agg.get('market_distance_km', 3) * 5), 0), 100)
+        digital = min(max(agg.get('internet_access_pct', 50), 0), 100)
+        
+        # Strengths and Challenges
+        strengths = []
+        challenges = []
+        if agg.get('agriculture_pct', 0) > 60: strengths.append("Strong agricultural foundation and high farming participation.")
+        if agg.get('electricity_access_pct', 0) > 85: strengths.append("Excellent power grid connectivity.")
+        if agg.get('market_distance_km', 10) < 2: strengths.append("High market accessibility for local businesses.")
+        if agg.get('tourist_distance_km', 10) < 5: strengths.append("Close proximity to tourist attractions.")
+        
+        if agg.get('internet_access_pct', 100) < 50: challenges.append("Low digital connectivity and internet penetration.")
+        if agg.get('hospital_distance_km', 0) > 6: challenges.append("Limited access to healthcare facilities.")
+        if agg.get('flood_risk_index', 0) > 0.6: challenges.append("Elevated flood risk requires mitigation.")
+        if agg.get('business_density', 10) < 5: challenges.append("Low commercial density suggests lack of business infrastructure.")
+
+        # Top Opportunities (using mean features for the whole municipality)
+        ml_eval = ml_service.evaluate(municipality_name, agg, "Retail") # dummy to get alternatives
+        
+        # Infrastructure gaps based on municipality average
+        gaps = []
+        if agg.get('electricity_access_pct', 100) < 80:
+            gaps.append({"type": "Power Grid", "severity": "High", "description": f"Only {round(agg['electricity_access_pct'], 1)}% electricity access."})
+        if agg.get('internet_access_pct', 100) < 60:
+            gaps.append({"type": "Digital Connectivity", "severity": "Medium", "description": f"Low internet penetration at {round(agg['internet_access_pct'], 1)}%."})
+        if agg.get('hospital_distance_km', 0) > 5:
+            gaps.append({"type": "Healthcare", "severity": "Medium", "description": f"Average hospital distance is {round(agg['hospital_distance_km'], 1)}km."})
+        if agg.get('bank_distance_km', 0) > 3:
+            gaps.append({"type": "Financial Access", "severity": "Low", "description": f"Average bank distance is {round(agg['bank_distance_km'], 1)}km."})
+
+        return {
+            "name": municipality_name,
+            "overview": {
+                "population": agg['population'],
+                "households": agg['households'],
+                "urbanization_rate": round(agg.get('urbanization_rate', 0), 1)
+            },
+            "development_index": {
+                "overall": round(dev_overall),
+                "economic": round(economic),
+                "infrastructure": round(infrastructure),
+                "social": round(social),
+                "accessibility": round(accessibility),
+                "digital": round(digital)
+            },
+            "economy": {
+                "average_income_npr": round(agg.get('average_income_npr', 0)),
+                "business_density": round(agg.get('business_density', 0), 2),
+                "commercial_buildings_avg": round(agg.get('commercial_buildings', 0), 1),
+                "industries_avg": round(agg.get('industries', 0), 1),
+                "purchasing_power_index": round(agg.get('purchasing_power_index', 0), 1)
+            },
+            "agriculture": {
+                "agriculture_pct": round(agg.get('agriculture_pct', 0), 1)
+            },
+            "tourism": {
+                "tourist_distance_km": round(agg.get('tourist_distance_km', 0), 2)
+            },
+            "infrastructure": {
+                "electricity_access_pct": round(agg.get('electricity_access_pct', 0), 1),
+                "internet_access_pct": round(agg.get('internet_access_pct', 0), 1),
+                "water_access_pct": round(agg.get('water_access_pct', 0), 1),
+                "road_distance_km": round(agg.get('road_distance_km', 0), 2),
+                "market_distance_km": round(agg.get('market_distance_km', 0), 2),
+                "hospital_distance_km": round(agg.get('hospital_distance_km', 0), 2)
+            },
+            "strengths": strengths,
+            "challenges": challenges,
+            "gaps": gaps,
+            "opportunities": ml_eval.get('alternatives', [])[:5],
+            "similar_municipalities": self.find_similar_municipalities(municipality_name, top_k=3)
+        }
+
 analyze_service = AnalyzeService()

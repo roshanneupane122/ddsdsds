@@ -27,6 +27,8 @@ interface FilterState {
   recommendationFilter: RecommendationFilter
   activeMapLayer: ChoroplethLayerId | null
   compareIds: string[]
+  sectorFilter: string | null
+  gapFilter: string | null
 
   // Municipality filter actions
   setMunicipalityFilter: (filter: Partial<MunicipalityFilter>) => void
@@ -38,6 +40,8 @@ interface FilterState {
 
   // Map layer toggle
   setActiveMapLayer: (layer: ChoroplethLayerId | null) => void
+  setSectorFilter: (sector: string | null) => void
+  setGapFilter: (gap: string | null) => void
 
   // Compare selection
   addToCompare: (id: string) => void
@@ -52,6 +56,8 @@ export const useFilterStore = create<FilterState>()(
       recommendationFilter: DEFAULT_RECOMMENDATION_FILTER,
       activeMapLayer: null,
       compareIds: [],
+      sectorFilter: null,
+      gapFilter: null,
 
       setMunicipalityFilter: (filter) =>
         set((state) => ({
@@ -70,6 +76,8 @@ export const useFilterStore = create<FilterState>()(
         set({ recommendationFilter: DEFAULT_RECOMMENDATION_FILTER }),
 
       setActiveMapLayer: (layer) => set({ activeMapLayer: layer }),
+      setSectorFilter: (sector) => set({ sectorFilter: sector }),
+      setGapFilter: (gap) => set({ gapFilter: gap }),
 
       addToCompare: (id) =>
         set((state) => {

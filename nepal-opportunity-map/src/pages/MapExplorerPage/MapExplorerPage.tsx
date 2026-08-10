@@ -108,7 +108,7 @@ export const MapExplorerPage = () => {
                         <span>{m.name}</span>
                         {m.nameNepali && <span className="text-xs text-slate-400 font-normal">({m.nameNepali})</span>}
                       </div>
-                      <span className="text-xs text-slate-500 font-medium block mt-0.5">{m.district} District · Province {m.province}</span>
+                      <span className="text-xs text-slate-500 font-medium block mt-0.5">{m.district} District · {PROVINCES.find(p => p.id === m.province)?.name ?? `Province ${m.province}`}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">

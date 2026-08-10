@@ -1,43 +1,128 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'react-router-dom'
 import { Card, Button, toast } from '@/components/ui'
 import { municipalitiesApi } from '@/services/municipalities.api'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 export const ReportGenerator = () => {
+  const [searchParams] = useSearchParams()
+  const urlMuniId = searchParams.get('municipalityId') || ''
+  const urlMuniName = searchParams.get('municipalityName') || ''
+
   const { data: municipalitiesData } = useQuery({
     queryKey: ['municipalities', 'list'],
     queryFn: () => municipalitiesApi.list({ limit: 200 }),
   })
   const municipalities = municipalitiesData?.data ?? []
 
-  const [selectedMuniId, setSelectedMuniId] = useState('')
-  const [includeRecs, setIncludeRecs] = useState(true)
-  const [includeDemo, setIncludeDemo] = useState(true)
+  const [selectedMuniId, setSelectedMuniId] = useState(urlMuniId)
   const [isExporting, setIsExporting] = useState(false)
 
-  const activeMuniId = selectedMuniId || municipalities[0]?.id || 'muni-1'
+  // When municipalities load, auto-select from URL param
+  useEffect(() => {
+    if (urlMuniId && municipalities.length > 0) {
+      const match = municipalities.find((m) => m.id === urlMuniId)
+      if (match) setSelectedMuniId(urlMuniId)
+    } else if (!selectedMuniId && municipalities.length > 0) {
+      setSelectedMuniId(municipalities[0]?.id || '')
+    }
+  }, [municipalities, urlMuniId])
+
+  const activeMuni = municipalities.find((m) => m.id === selectedMuniId) || municipalities[0]
+
+  // Fetch intelligence profile for the selected municipality
+  const { data: intelligence, isLoading: intelLoading } = useQuery({
+    queryKey: ['municipalities', 'intelligence', selectedMuniId],
+    queryFn: () => municipalitiesApi.getIntelligence(selectedMuniId),
+    enabled: !!selectedMuniId,
+  })
 
   const handleExportPDF = async () => {
+    if (!activeMuni || !intelligence) {
+      toast.error('Please wait for municipality data to load.')
+      return
+    }
     setIsExporting(true)
-    toast.info('Generating PDF report via AI Backend...')
+    toast.info('Generating municipality intelligence report...')
 
     try {
-      const muni = municipalities.find((m) => m.id === activeMuniId) || municipalities[0]
-      if (!muni) throw new Error('Municipality not selected')
+      const devIndex = intelligence.development_index || {}
+      const economy = intelligence.economy || {}
+      const infra = intelligence.infrastructure || {}
+      const agri = intelligence.agriculture || {}
+      const opps = intelligence.opportunities || []
+      const gaps = intelligence.gaps || []
+      const strengths = intelligence.strengths || []
+      const challenges = intelligence.challenges || []
 
       const payload = {
-        title: 'AI Investment & Profile Report',
-        municipality_name: muni.name,
-        content: `This report contains an AI-generated analysis of ${muni.name} municipality located in ${muni.district} district.\n\nThe region has a population of ${muni.population} and a total land area of ${muni.area} sq km.\n\nAutomated analysis indicates strong potential based on current indices.`,
+        title: `${activeMuni.name} Municipality Intelligence Report`,
+        municipality_name: activeMuni.name,
+        content: [
+          `CATALYST MUNICIPALITY INTELLIGENCE REPORT`,
+          `Municipality: ${activeMuni.name}`,
+          `District: ${activeMuni.district}`,
+          `Province: Lumbini Province`,
+          ``,
+          `OVERVIEW`,
+          `Population: ${(intelligence.overview?.population || 0).toLocaleString()}`,
+          `Households: ${(intelligence.overview?.households || 0).toLocaleString()}`,
+          `Urbanization Rate: ${intelligence.overview?.urbanization_rate || 0}%`,
+          `Average Income: NPR ${economy.average_income_npr || 'N/A'}`,
+          ``,
+          `DEVELOPMENT INDEX`,
+          `Overall: ${devIndex.overall || 0}/100`,
+          `Economic: ${devIndex.economic || 0}/100`,
+          `Infrastructure: ${devIndex.infrastructure || 0}/100`,
+          `Social: ${devIndex.social || 0}/100`,
+          `Accessibility: ${devIndex.accessibility || 0}/100`,
+          `Digital: ${devIndex.digital || 0}/100`,
+          ``,
+          `ECONOMIC INDICATORS`,
+          `Business Density: ${economy.business_density || 'N/A'} per sq km`,
+          `Purchasing Power Index: ${economy.purchasing_power_index || 'N/A'}/100`,
+          `Commercial Buildings (avg/ward): ${economy.commercial_buildings_avg || 'N/A'}`,
+          `Industrial Units (avg/ward): ${economy.industries_avg || 'N/A'}`,
+          ``,
+          `AGRICULTURE`,
+          `Agricultural Participation: ${agri.agriculture_pct || 'N/A'}%`,
+          ``,
+          `INFRASTRUCTURE`,
+          `Electricity Access: ${infra.electricity_access_pct || 'N/A'}%`,
+          `Internet Penetration: ${infra.internet_access_pct || 'N/A'}%`,
+          `Water Access: ${infra.water_access_pct || 'N/A'}%`,
+          `Avg Road Distance: ${infra.road_distance_km || 'N/A'} km`,
+          `Avg Market Distance: ${infra.market_distance_km || 'N/A'} km`,
+          `Avg Hospital Distance: ${infra.hospital_distance_km || 'N/A'} km`,
+          ``,
+          `DATA-DERIVED STRENGTHS`,
+          ...strengths.map((s: string) => `• ${s}`),
+          ``,
+          `IDENTIFIED CHALLENGES`,
+          ...challenges.map((c: string) => `• ${c}`),
+          ``,
+          `INFRASTRUCTURE GAPS`,
+          ...gaps.filter((g: any) => g.type !== 'None').map((g: any) => `• [${g.severity}] ${g.type}: ${g.description}`),
+          gaps.filter((g: any) => g.type !== 'None').length === 0 ? '• No significant gaps detected.' : '',
+          ``,
+          `TOP BUSINESS OPPORTUNITIES (ML-Ranked)`,
+          ...opps.slice(0, 8).map((o: any, i: number) => `${i + 1}. ${o.business} — Score: ${Math.round(o.confidence)}/100`),
+          ``,
+          `Report generated by Catalyst AI-Powered Geospatial Decision Support System`,
+          `Data Coverage: Rupandehi District, Lumbini Province, Nepal`,
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ].join('\n'),
         metrics: {
-          agriculture_score: muni.agricultureScore,
-          tourism_score: muni.tourismScore,
-          infrastructure_score: muni.infrastructureScore,
-          economic_score: muni.economicScore,
-          digital_score: muni.digitalScore,
-          population: muni.population
+          overall_development_index: devIndex.overall || 0,
+          economic_index: devIndex.economic || 0,
+          infrastructure_index: devIndex.infrastructure || 0,
+          social_index: devIndex.social || 0,
+          population: intelligence.overview?.population || 0,
+          business_density: economy.business_density || 0,
+          electricity_access: infra.electricity_access_pct || 0,
+          internet_access: infra.internet_access_pct || 0,
+          agriculture_pct: agri.agriculture_pct || 0,
+          top_opportunity: opps[0]?.business || 'N/A',
         }
       }
 
@@ -53,12 +138,11 @@ export const ReportGenerator = () => {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `Report_${muni.name.replace(/ /g, '_')}.pdf`
+      a.download = `Catalyst_Report_${activeMuni.name.replace(/ /g, '_')}.pdf`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-
       toast.success('Report downloaded successfully!')
     } catch (err) {
       console.error(err)
@@ -69,18 +153,37 @@ export const ReportGenerator = () => {
   }
 
   const handleExportCSV = () => {
+    if (!intelligence || !activeMuni) return
     toast.info('Preparing CSV dataset...')
-    const muni = municipalities.find((m) => m.id === activeMuniId) || municipalities[0]
-    if (!muni) return
 
-    const headers = 'ID,Name,District,Province,Population,Area,AgriScore,TourismScore,InfraScore\n'
-    const row = `${muni.id},"${muni.name}",${muni.district},${muni.province},${muni.population},${muni.area},${muni.agricultureScore},${muni.tourismScore},${muni.infrastructureScore}\n`
+    const devIndex = intelligence.development_index || {}
+    const economy = intelligence.economy || {}
+    const infra = intelligence.infrastructure || {}
+
+    const headers = 'Name,District,Province,Population,Households,Dev_Overall,Dev_Economic,Dev_Infrastructure,Dev_Social,Dev_Digital,Business_Density,Purchasing_Power,Electricity_Pct,Internet_Pct,Road_Dist_km\n'
+    const row = [
+      `"${activeMuni.name}"`,
+      `"${activeMuni.district}"`,
+      `"Lumbini"`,
+      intelligence.overview?.population || 0,
+      intelligence.overview?.households || 0,
+      devIndex.overall || 0,
+      devIndex.economic || 0,
+      devIndex.infrastructure || 0,
+      devIndex.social || 0,
+      devIndex.digital || 0,
+      economy.business_density || 0,
+      economy.purchasing_power_index || 0,
+      infra.electricity_access_pct || 0,
+      infra.internet_access_pct || 0,
+      infra.road_distance_km || 0,
+    ].join(',') + '\n'
 
     const blob = new Blob([headers + row], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', `Municipality_Data_${muni.id}.csv`)
+    link.setAttribute('download', `Catalyst_Data_${activeMuni.name.replace(/ /g, '_')}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -90,63 +193,67 @@ export const ReportGenerator = () => {
   return (
     <Card padding="lg" className="space-y-6 max-w-2xl bg-white border border-emerald-100 shadow-sm rounded-2xl">
       <div className="space-y-1">
-        <h3 className="font-bold text-slate-900 text-lg font-display">Generate Investment & Profile Report</h3>
-        <p className="text-xs text-slate-500 font-medium">Configure parameters for automated PDF synthesis or raw CSV dataset export.</p>
+        <h3 className="font-bold text-slate-900 text-lg font-display">Generate Municipality Intelligence Report</h3>
+        <p className="text-xs text-slate-500 font-medium">Full report generated from live intelligence data — economy, infrastructure, gaps and opportunities.</p>
       </div>
+
+      {urlMuniName && (
+        <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2 text-xs font-mono text-emerald-800">
+          📍 Pre-selected: <strong>{urlMuniName}</strong>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div>
           <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Municipality</label>
           <select
-            value={activeMuniId}
+            value={selectedMuniId}
             onChange={(e) => setSelectedMuniId(e.target.value)}
             className="w-full px-3.5 py-2.5 bg-white border border-emerald-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
           >
             {municipalities.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.name} ({m.district} District, Prov {m.province})
+                {m.name} — {m.district} District, Lumbini Province
               </option>
             ))}
           </select>
         </div>
 
-        <div className="space-y-2 pt-3 border-t border-emerald-100">
-          <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">Include Report Sections</label>
-          <div className="flex items-center gap-6 text-xs text-slate-700 font-medium">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={includeRecs}
-                onChange={(e) => setIncludeRecs(e.target.checked)}
-                className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-              />
-              AI Recommendations Rationale
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={includeDemo}
-                onChange={(e) => setIncludeDemo(e.target.checked)}
-                className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-              />
-              Demographics Breakdown
-            </label>
+        {/* Preview of loaded intelligence */}
+        {intelligence && !intelLoading && (
+          <div className="bg-slate-50 rounded-xl border border-slate-100 p-4 space-y-2 text-xs">
+            <p className="font-bold text-slate-700 font-mono uppercase">Report Preview</p>
+            <div className="grid grid-cols-2 gap-2 text-slate-600">
+              <span>Population: <strong>{(intelligence.overview?.population || 0).toLocaleString()}</strong></span>
+              <span>Dev Index: <strong>{intelligence.development_index?.overall || 0}/100</strong></span>
+              <span>Top Opportunity: <strong>{intelligence.opportunities?.[0]?.business || 'N/A'}</strong></span>
+              <span>Gaps: <strong>{intelligence.gaps?.filter((g: any) => g.type !== 'None').length || 0} identified</strong></span>
+            </div>
           </div>
-        </div>
+        )}
+        {intelLoading && (
+          <div className="text-xs text-slate-400 font-mono animate-pulse">Loading intelligence data...</div>
+        )}
       </div>
 
       <div className="flex gap-3 pt-4 border-t border-emerald-100">
-        <Button onClick={handleExportPDF} isLoading={isExporting} className="flex-1 shadow-md shadow-emerald-600/20">
+        <Button
+          onClick={handleExportPDF}
+          isLoading={isExporting}
+          disabled={intelLoading || !intelligence}
+          className="flex-1 shadow-md shadow-emerald-600/20"
+        >
           Export PDF Report
         </Button>
-        <Button variant="outline" onClick={handleExportCSV} className="border-emerald-200">
+        <Button variant="outline" onClick={handleExportCSV} disabled={!intelligence} className="border-emerald-200">
           Export CSV Data
         </Button>
       </div>
 
       <p className="text-2xs text-slate-500 font-mono italic">
-        Connected to FastAPI GIS Backend engine. PDF compilation extracts active indicator layers.
+        Powered by Catalyst Intelligence Engine • Data: Rupandehi District ML Dataset
       </p>
     </Card>
   )
 }
+
