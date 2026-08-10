@@ -56,3 +56,28 @@ api_router.include_router(
     prefix="/auth",
     tags=["Authentication"]
 )
+
+from app.api.v1.endpoints import evaluate, analyze, spatial, report
+api_router.include_router(
+    evaluate.router,
+    prefix="/evaluate",
+    tags=["AI Recommendations"]
+)
+
+api_router.include_router(
+    analyze.router,
+    prefix="/analyze",
+    tags=["AI Analytics"]
+)
+
+api_router.include_router(
+    spatial.router,
+    prefix="/spatial",
+    tags=["Spatial Data"]
+)
+
+api_router.include_router(
+    report.router,
+    prefix="/report",
+    tags=["Reports"]
+)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from geojson_pydantic import MultiPolygon, Polygon
+from geojson_pydantic import MultiPolygon, Polygon, Point
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic import field_validator
 from geoalchemy2 import WKBElement
@@ -48,7 +48,7 @@ class MunicipalityBase(BaseModel):
 # Create Schema
 class MunicipalityCreate(MunicipalityBase):
     # Accepts both standard Polygon and MultiPolygon geometries from client
-    geom: Union[MultiPolygon, Polygon] = Field(
+    geom: Union[MultiPolygon, Polygon, Point] = Field(
         ...,
         description="Municipality boundary in GeoJSON Polygon or MultiPolygon format"
     )
@@ -83,7 +83,7 @@ class MunicipalityUpdate(BaseModel):
         description="Total population"
     )
 
-    geom: Optional[Union[MultiPolygon, Polygon]] = Field(
+    geom: Optional[Union[MultiPolygon, Polygon, Point]] = Field(
         default=None,
         description="Municipality boundary in GeoJSON Polygon or MultiPolygon format"
     )
@@ -94,7 +94,7 @@ class MunicipalityRead(MunicipalityBase):
     municipality_id: str = Field(..., description="Unique UUID for the municipality")
 
     # Output serialized GeoJSON boundary for frontend GIS rendering (Mapbox/Leaflet)
-    geom: Union[MultiPolygon, Polygon] = Field(..., description="GeoJSON Spatial geometry")
+    geom: Union[MultiPolygon, Polygon, Point] = Field(..., description="GeoJSON Spatial geometry")
 
     @field_validator("geom", mode="before")
     @classmethod

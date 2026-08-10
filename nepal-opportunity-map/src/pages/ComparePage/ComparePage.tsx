@@ -54,11 +54,42 @@ export const ComparePage = () => {
           <h1 className="text-3xl font-bold font-display text-slate-900 tracking-tight">Municipality Comparison Engine</h1>
           <p className="text-sm text-slate-600 mt-1">Compare up to 4 local units side-by-side across economic, agricultural, and infrastructure metrics.</p>
         </div>
-        {compareIds.length > 0 && (
-          <Button variant="outline" size="sm" onClick={clearCompare} className="self-start md:self-auto text-xs text-red-600 border-red-200 hover:bg-red-50">
-            Clear Selection ({compareIds.length})
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {compareIds.length === 1 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={async () => {
+                try {
+                  const mId = compareIds[0];
+                  // Find name from allMunicipalities
+                  const mName = allMunicipalities.find(m => m.id === mId)?.name;
+                  if (!mName) return;
+                  
+                  // Use dynamic import or direct fetch to avoid circular dependency
+                  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/v1/analyze/similarity?municipality_name=${mName}&top_k=3`);
+                  if (response.ok) {
+                    const data = await response.json();
+                    data.similar_municipalities.forEach((sm: any) => {
+                      const match = allMunicipalities.find(m => m.name === sm.municipality_name);
+                      if (match) addToCompare(match.id);
+                    });
+                  }
+                } catch (e) {
+                  console.error("Failed to fetch similar municipalities", e);
+                }
+              }} 
+              className="self-start md:self-auto text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+            >
+              ✨ Find Similar (AI)
+            </Button>
+          )}
+          {compareIds.length > 0 && (
+            <Button variant="outline" size="sm" onClick={clearCompare} className="self-start md:self-auto text-xs text-red-600 border-red-200 hover:bg-red-50">
+              Clear Selection ({compareIds.length})
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Municipality Search & Selection Bar */}

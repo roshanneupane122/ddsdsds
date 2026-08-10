@@ -371,25 +371,15 @@ export const municipalitiesApi = {
 
   /** Get municipality GeoJSON FeatureCollection */
   geojson: async (): Promise<GeoJSON.FeatureCollection> => {
-    const { data } = await apiClient.get<any[]>(ENDPOINTS.municipalities.list)
-    const features: GeoJSON.Feature[] = (data || []).map((m) => ({
-      type: 'Feature',
-      geometry: m.geom || {
-        type: 'Point',
-        coordinates: [83.9856, 28.2096],
-      },
-      properties: {
-        id: m.municipality_id,
-        name: m.name,
-        district: m.district,
-        province: m.province,
-        population: m.total_population,
-      },
-    }))
-
-    return {
-      type: 'FeatureCollection',
-      features,
+    try {
+      const { data } = await apiClient.get<GeoJSON.FeatureCollection>(ENDPOINTS.spatial.layers)
+      return data
+    } catch {
+      // Fallback if backend isn't ready
+      return {
+        type: 'FeatureCollection',
+        features: [],
+      }
     }
   },
 

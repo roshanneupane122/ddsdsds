@@ -65,4 +65,16 @@ export const ENDPOINTS = {
     create: '/saved_recommendation/',
     delete: (id: string) => `/saved_recommendation/${id}`,
   },
+
+  // ── AI Analytics ───────────────────────────────────────────
+  analyze: {
+    score: '/analyze/score',
+    similarity: '/analyze/similarity',
+    chat: '/analyze/chat',
+  },
+
+  // ── Spatial Data ───────────────────────────────────────────
+  spatial: {
+    layers: '/spatial/layers',
+  },
 } as const

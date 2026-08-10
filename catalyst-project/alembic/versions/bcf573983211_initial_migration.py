@@ -44,7 +44,7 @@ def upgrade() -> None:
     sa.Column('total_population', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('geom', geoalchemy2.types.Geometry(geometry_type='MULTIPOLYGON', srid=4326, from_text='ST_GeomFromEWKT', name='geometry', nullable=False), nullable=False),
+    sa.Column('geom', geoalchemy2.types.Geometry(geometry_type='GEOMETRY', srid=4326, from_text='ST_GeomFromEWKT', name='geometry', nullable=False), nullable=False),
     sa.PrimaryKeyConstraint('municipality_id')
     )
     op.create_index(op.f('ix_municipalities_district'), 'municipalities', ['district'], unique=False)

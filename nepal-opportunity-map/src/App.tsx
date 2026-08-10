@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { Header, Sidebar, PageContainer, Footer } from '@/components/layout'
 import { ToastContainer } from '@/components/ui'
+import { AiAnalystChat } from '@/features/chat/AiAnalystChat'
 
 export default function App() {
   const location = useLocation()
@@ -31,6 +32,7 @@ export default function App() {
           <Outlet />
         </div>
       )}
+      <AiAnalystChat />
       <ToastContainer />
     </div>
   )

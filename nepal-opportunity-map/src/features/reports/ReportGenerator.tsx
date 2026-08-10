@@ -21,37 +21,48 @@ export const ReportGenerator = () => {
 
   const handleExportPDF = async () => {
     setIsExporting(true)
-    toast.info('Generating PDF report...')
+    toast.info('Generating PDF report via AI Backend...')
 
     try {
-      const element = document.getElementById('main-content')
-      if (!element) throw new Error('Target container not found')
+      const muni = municipalities.find((m) => m.id === activeMuniId) || municipalities[0]
+      if (!muni) throw new Error('Municipality not selected')
 
-      const canvas = await html2canvas(element, { scale: 1.5, useCORS: true })
-      const imgData = canvas.toDataURL('image/png')
-
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const imgWidth = 210
-      const pageHeight = 295
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      let heightLeft = imgHeight
-      let position = 0
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight
-        pdf.addPage()
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
+      const payload = {
+        title: 'AI Investment & Profile Report',
+        municipality_name: muni.name,
+        content: `This report contains an AI-generated analysis of ${muni.name} municipality located in ${muni.district} district.\n\nThe region has a population of ${muni.population} and a total land area of ${muni.area} sq km.\n\nAutomated analysis indicates strong potential based on current indices.`,
+        metrics: {
+          agriculture_score: muni.agricultureScore,
+          tourism_score: muni.tourismScore,
+          infrastructure_score: muni.infrastructureScore,
+          economic_score: muni.economicScore,
+          digital_score: muni.digitalScore,
+          population: muni.population
+        }
       }
 
-      pdf.save(`Nepal_Opportunity_Report_${activeMuniId}.pdf`)
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/report/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      if (!res.ok) throw new Error('Backend failed to generate report')
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Report_${muni.name.replace(/ /g, '_')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
       toast.success('Report downloaded successfully!')
     } catch (err) {
       console.error(err)
-      toast.error('PDF export failed. Try again.')
+      toast.error('PDF export failed. Ensure the backend is running.')
     } finally {
       setIsExporting(false)
     }

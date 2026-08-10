@@ -57,7 +57,7 @@ class Municipality(Base):
 
     # Added spatial indexing for PostGIS optimization
     geom: Mapped[WKBElement] = mapped_column(
-        Geometry(geometry_type="MULTIPOLYGON", srid=4326, spatial_index=True),
+        Geometry(geometry_type="GEOMETRY", srid=4326, spatial_index=True),
         nullable=False
     )
 

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
 import { MUNICIPALITY_TYPE_LABELS, PROVINCES } from '@/constants'
 import { formatNumber, formatArea } from '@/lib/formatters'
@@ -12,6 +13,26 @@ interface MunicipalityDetailPanelProps {
 
 export const MunicipalityDetailPanel = ({ municipality, onClose }: MunicipalityDetailPanelProps) => {
   const { addToCompare, compareIds } = useFilterStore()
+  const [gaps, setGaps] = useState<any>(null)
+
+  useEffect(() => {
+    if (!municipality) {
+      setGaps(null)
+      return
+    }
+    const fetchGaps = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/analyze/gaps?municipality_name=${municipality.name}&ward_no=1`)
+        if (res.ok) {
+          const data = await res.json()
+          setGaps(data)
+        }
+      } catch (err) {
+        console.error('Failed to fetch gaps', err)
+      }
+    }
+    fetchGaps()
+  }, [municipality])
 
   if (!municipality) return null
 
@@ -74,6 +95,24 @@ export const MunicipalityDetailPanel = ({ municipality, onClose }: MunicipalityD
           <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${municipality.infrastructureScore}%` }} />
         </div>
       </div>
+
+      {gaps && gaps.gaps && gaps.gaps.length > 0 && gaps.gaps[0].type !== "None" && (
+        <div className="pt-2 border-t border-emerald-100">
+          <h4 className="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Infrastructure Gaps Detected
+          </h4>
+          <div className="space-y-1.5">
+            {gaps.gaps.map((gap: any, idx: number) => (
+              <div key={idx} className="bg-red-50 text-red-800 text-[10px] p-2 rounded-lg border border-red-100">
+                <span className="font-bold uppercase tracking-wider">{gap.type}:</span> {gap.description}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-2 pt-2 border-t border-emerald-100">
         <Link to={`/citizen/municipalities/${municipality.id}`} className="flex-1">
