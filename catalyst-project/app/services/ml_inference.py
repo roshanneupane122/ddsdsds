@@ -89,8 +89,16 @@ class MLInferenceService:
                 user_match_idx = idx
                 break
                 
-        top_recommendation = top_classes[0]
-        top_confidence = float(top_probs[0] * 100)
+        # Get top alternatives, skipping the user's matched choice if it exists
+        alternatives = []
+        for i in range(len(top_classes)):
+            if len(alternatives) >= 4:
+                break
+            if i != user_match_idx:
+                alternatives.append({
+                    "business": top_classes[i],
+                    "confidence": float(top_probs[i] * 100)
+                })
         
         if user_match_idx != -1:
             user_confidence = float(top_probs[user_match_idx] * 100)
@@ -99,7 +107,7 @@ class MLInferenceService:
             user_confidence = 0.0
             user_rank = len(top_classes)
             
-        is_feasible = (user_rank == 1) or (user_confidence >= 20.0)
+        is_feasible = (user_rank <= 3) or (user_confidence >= 15.0)
         decision_verdict = "YES, RECOMMENDED" if is_feasible else "NO, NOT RECOMMENDED"
         
         return {
@@ -107,8 +115,7 @@ class MLInferenceService:
             "recommendation": decision_verdict,
             "feasibility_score": user_confidence,
             "user_rank": user_rank,
-            "top_alternative_if_no": top_recommendation,
-            "top_confidence": top_confidence
+            "alternatives": alternatives
         }
 
 ml_service = MLInferenceService()

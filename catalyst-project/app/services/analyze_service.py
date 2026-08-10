@@ -35,7 +35,7 @@ class AnalyzeService:
     def calculate_opportunity_score(self, municipality_name: str, ward_no: int, proposed_business: str) -> Dict[str, Any]:
         """
         Calculates a deterministic 0-100 Opportunity Score combining ML probability 
-        and local economic indices.
+        and local economic indices, and generates Explainable AI (XAI) factors.
         """
         ward_features = ml_service.get_ward_features(municipality_name, ward_no)
         if not ward_features:
@@ -44,31 +44,104 @@ class AnalyzeService:
         ml_eval = ml_service.evaluate(municipality_name, ward_features, proposed_business)
         ml_confidence = ml_eval['feasibility_score'] # 0-100
         
-        # Extract indices (assuming they are roughly 0-100 scale, or we normalize them)
-        purchasing_power = min(ward_features.get('purchasing_power_index', 50), 100)
-        development = min(ward_features.get('development_index', 50), 100)
+        # Breakdown Factors (0-100 scales)
         footfall = min(ward_features.get('footfall_index', 50), 100)
+        purchasing_power = min(ward_features.get('purchasing_power_index', 50), 100)
         
-        # Weights
-        # 40% ML Model Probability
-        # 20% Purchasing Power
-        # 20% Development Index
-        # 20% Footfall Index
+        # Accessibility (derived from road/market distance)
+        road_dist = ward_features.get('road_distance_km', 5)
+        market_dist = ward_features.get('market_distance_km', 10)
+        accessibility = max(0, 100 - (road_dist * 5) - (market_dist * 2))
         
-        score = (ml_confidence * 0.4) + (purchasing_power * 0.2) + (development * 0.2) + (footfall * 0.2)
+        # Infrastructure Readiness
+        elec = ward_features.get('electricity_access_pct', 50)
+        inet = ward_features.get('internet_access_pct', 50)
+        infrastructure = (elec + inet) / 2
+        
+        # Competition (Inverse of business density, scaled)
+        density = ward_features.get('business_density', 50)
+        competition = min(density * 1.5, 100) # Higher means more competition
+        
+        # Business Risk (Flood, Landslide, Crime)
+        crime = ward_features.get('crime_rate_index', 50)
+        flood = ward_features.get('flood_risk_index', 50)
+        risk = (crime + flood) / 2
+        
+        # Overall Opportunity Score
+        # 30% ML, 20% Purchasing, 20% Infrastructure, 15% Accessibility, 15% Footfall
+        score = (ml_confidence * 0.3) + (purchasing_power * 0.2) + (infrastructure * 0.2) + (accessibility * 0.15) + (footfall * 0.15)
+        
+        # Penalize for extreme competition or risk
+        if competition > 80: score -= 10
+        if risk > 70: score -= 10
+        
         score = min(max(score, 0), 100)
+        
+        # Determine Opportunity Level
+        if score >= 90:
+            level = "EXCELLENT OPPORTUNITY"
+        elif score >= 75:
+            level = "STRONG OPPORTUNITY"
+        elif score >= 60:
+            level = "MODERATE OPPORTUNITY"
+        elif score >= 40:
+            level = "WEAK OPPORTUNITY"
+        else:
+            level = "LOW OPPORTUNITY"
+            
+        # Generate Procedural XAI Factors
+        positive_factors = []
+        negative_factors = []
+        
+        if footfall > 75: positive_factors.append("High local footfall and strong market demand.")
+        elif footfall < 40: negative_factors.append("Lower than average market demand and footfall.")
+        
+        if purchasing_power > 70: positive_factors.append("Strong local purchasing power.")
+        elif purchasing_power < 45: negative_factors.append("Purchasing power is moderate rather than high.")
+        
+        if accessibility > 75: positive_factors.append("Good road and market accessibility.")
+        elif accessibility < 50: negative_factors.append("Location has logistical and accessibility challenges.")
+        
+        if infrastructure > 80: positive_factors.append("Adequate electricity and internet availability.")
+        elif infrastructure < 60: negative_factors.append("Infrastructure readiness is currently lacking.")
+        
+        if competition > 70: negative_factors.append("Existing business competition is relatively high.")
+        elif competition < 30: positive_factors.append("Low existing competition presents a market gap.")
+        
+        if risk > 60: negative_factors.append("Environmental or security risk factors are elevated.")
+        
+        if ml_confidence >= 75: positive_factors.append("AI model strongly aligns this business type with the location's features.")
+        elif ml_confidence < 30: negative_factors.append("AI model finds low historical precedent for this business type here.")
+        
+        # Base description
+        summary = f"{proposed_business} appears to be a {level.lower()} in {municipality_name} based on available demographic, accessibility, purchasing-power, and competition indicators."
         
         return {
             "proposed_business": proposed_business,
             "location": f"{municipality_name} - Ward {ward_no}",
-            "opportunity_score": round(score, 2),
-            "ml_confidence": round(ml_confidence, 2),
-            "factors": {
-                "purchasing_power": round(purchasing_power, 2),
-                "development_index": round(development, 2),
-                "footfall_index": round(footfall, 2)
+            "opportunity_score": round(score),
+            "opportunity_level": level,
+            "summary": summary,
+            "ml_confidence": round(ml_confidence),
+            "alternatives": ml_eval.get('alternatives', []),
+            "breakdown": {
+                "market_demand": round(footfall),
+                "purchasing_power": round(purchasing_power),
+                "accessibility": round(accessibility),
+                "infrastructure_readiness": round(infrastructure),
+                "competition": round(competition),
+                "business_risk": round(risk)
             },
-            "recommendation": "Highly Favorable" if score >= 75 else ("Moderate" if score >= 50 else "Not Recommended")
+            "positive_factors": positive_factors,
+            "negative_factors": negative_factors,
+            "data_used": {
+                "population": ward_features.get('population', 0),
+                "purchasing_power_index": round(purchasing_power),
+                "business_density": round(density),
+                "road_distance_km": road_dist,
+                "market_distance_km": market_dist,
+                "infrastructure_index": round(infrastructure)
+            }
         }
 
     def find_similar_municipalities(self, municipality_name: str, top_k: int = 3) -> List[Dict[str, Any]]:

@@ -11,7 +11,40 @@ class ScoreRequest(BaseModel):
     ward_no: int
     proposed_business: str
 
-@router.post("/score", summary="Calculate Deterministic Opportunity Score")
+class AlternativeBusiness(BaseModel):
+    business: str
+    confidence: float
+
+class BreakdownFactors(BaseModel):
+    market_demand: int
+    purchasing_power: int
+    accessibility: int
+    infrastructure_readiness: int
+    competition: int
+    business_risk: int
+
+class DataUsed(BaseModel):
+    population: int
+    purchasing_power_index: int
+    business_density: int
+    road_distance_km: float
+    market_distance_km: float
+    infrastructure_index: int
+
+class ScoreResponse(BaseModel):
+    proposed_business: str
+    location: str
+    opportunity_score: int
+    opportunity_level: str
+    summary: str
+    ml_confidence: int
+    alternatives: List[AlternativeBusiness]
+    breakdown: BreakdownFactors
+    positive_factors: List[str]
+    negative_factors: List[str]
+    data_used: DataUsed
+
+@router.post("/score", response_model=ScoreResponse, summary="Calculate Deterministic Opportunity Score")
 async def calculate_score(
     request: ScoreRequest,
     db: DBSession,

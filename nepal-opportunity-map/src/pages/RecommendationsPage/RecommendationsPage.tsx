@@ -1,9 +1,22 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import apiClient from '@/services/apiClient'
+import { ENDPOINTS } from '@/services/endpoints'
 import { recommendationsApi } from '@/services/recommendations.api'
-import { RecommendationCard } from '@/features/recommendations'
+import { RecommendationCard, EvaluationResultModal } from '@/features/recommendations'
 import { Input, SkeletonCard, EmptyState, Card, Button } from '@/components/ui'
 import { OPPORTUNITY_CATEGORIES, PROVINCES } from '@/constants'
 import { useFilterStore } from '@/store'
+
+const SUPPORTED_BUSINESSES = [
+  'Agro-vet Clinic', 'Bookstore', 'Boutique Hotel', 'Cafe', 'Cold Storage',
+  'Dairy Farm', 'Electronics Shop', 'Fashion Boutique', 'Fertilizer Store',
+  'Grocery Store', 'Gym & Fitness Center', 'Handicraft Shop', 'Hardware Store',
+  'IT Services', 'Logistics/Freight Service', 'Medical Supply Store',
+  'Mobile Repair Shop', 'Pharmacy', 'Polyclinic', 'Restaurant',
+  'Stationery Shop', 'Supermarket', 'Tailoring Shop', 'Travel Agency',
+  'Tutoring Center', 'Wholesale Distributor'
+]
 
 export const RecommendationsPage = () => {
   const { recommendationFilter, setRecommendationFilter, resetRecommendationFilter } = useFilterStore()
@@ -14,6 +27,42 @@ export const RecommendationsPage = () => {
   })
 
   const recommendations = paginatedData?.data ?? []
+
+  // Evaluation State
+  const [evaluationResult, setEvaluationResult] = useState<any>(null)
+  const [isEvaluating, setIsEvaluating] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleEvaluate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const muni = (form.elements.namedItem('municipality') as HTMLInputElement).value
+    const ward = (form.elements.namedItem('ward') as HTMLInputElement).value
+    const business = (form.elements.namedItem('business') as HTMLSelectElement).value
+    const budget = (form.elements.namedItem('budget') as HTMLInputElement).value
+
+    if (!muni || !ward || !business || !budget) return
+
+    setIsEvaluating(true)
+    try {
+      const res = await apiClient.post(ENDPOINTS.analyze.score, {
+        municipality_name: muni,
+        ward_no: parseInt(ward, 10),
+        proposed_business: business,
+        // budget is collected but ML model currently doesn't use it. Sent for future expandability.
+      })
+      setEvaluationResult(res.data)
+      setIsModalOpen(true)
+    } catch (err: any) {
+      if (err.statusCode === 404) {
+        alert("Failed to evaluate. Make sure the municipality and ward exist in the dataset.")
+      } else {
+        alert("Error connecting to evaluation engine.")
+      }
+    } finally {
+      setIsEvaluating(false)
+    }
+  }
 
   return (
     <div className="space-y-8 pb-12">
@@ -28,40 +77,47 @@ export const RecommendationsPage = () => {
       {/* Evaluate Idea Banner */}
       <Card padding="md" className="bg-emerald-50 border border-emerald-200 shadow-sm space-y-4">
         <h3 className="text-lg font-bold text-emerald-900">✨ Evaluate Your Own Business Idea</h3>
-        <p className="text-sm text-emerald-700">Have a specific business in mind? Enter it below along with a municipality to get an instant AI evaluation and opportunity score based on local demographics and infrastructure.</p>
+        <p className="text-sm text-emerald-700">Get an instant AI decision-support evaluation based on local demographics, purchasing power, and infrastructure data.</p>
         <form 
-          className="flex flex-col sm:flex-row gap-3"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const form = e.target as HTMLFormElement;
-            const muni = form.municipality.value;
-            const business = form.business.value;
-            const ward = form.ward.value;
-            if (!muni || !business || !ward) return;
-            
-            try {
-              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/analyze/score`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ municipality_name: muni, ward_no: parseInt(ward), proposed_business: business })
-              });
-              if (res.ok) {
-                const data = await res.json();
-                alert(`Opportunity Score: ${data.opportunity_score}/100\nRecommendation: ${data.recommendation}\n\nFactors:\n- Purchasing Power: ${data.factors.purchasing_power}\n- Development Index: ${data.factors.development_index}\n- ML Confidence: ${data.ml_confidence}%`);
-              } else {
-                alert("Failed to evaluate. Make sure the municipality and ward exist in the dataset.");
-              }
-            } catch (err) {
-              alert("Error connecting to evaluation engine.");
-            }
-          }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end"
+          onSubmit={handleEvaluate}
         >
-          <Input name="municipality" placeholder="Municipality (e.g. Butwal)" required className="flex-1 bg-white" />
-          <Input name="ward" type="number" placeholder="Ward No. (e.g. 1)" required className="w-32 bg-white" min={1} />
-          <Input name="business" placeholder="Business Idea (e.g. Coffee Shop)" required className="flex-1 bg-white" />
-          <Button type="submit" variant="primary">Evaluate</Button>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Municipality</label>
+            <Input name="municipality" placeholder="e.g. Butwal" required className="bg-white w-full" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Ward</label>
+            <Input name="ward" type="number" placeholder="e.g. 11" required min={1} className="bg-white w-full" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Business Idea</label>
+            <select 
+              name="business" 
+              required 
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/25 h-[42px]"
+            >
+              <option value="">Select Business...</option>
+              {SUPPORTED_BUSINESSES.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Budget (NPR)</label>
+            <Input name="budget" type="number" placeholder="e.g. 1500000" required min={50000} step={10000} className="bg-white w-full" />
+          </div>
+          <div className="pt-2">
+            <Button type="submit" variant="primary" className="w-full h-[42px]" isLoading={isEvaluating}>
+              {isEvaluating ? 'Evaluating...' : 'Evaluate'}
+            </Button>
+          </div>
         </form>
       </Card>
+      
+      <EvaluationResultModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        result={evaluationResult}
+      />
 
       {/* Filter Bar */}
       <div className="bg-white p-4.5 rounded-2xl border border-emerald-100/90 shadow-sm space-y-4">
