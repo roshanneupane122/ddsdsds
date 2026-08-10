@@ -35,7 +35,7 @@ export const Badge = ({
 }: BadgeProps) => (
   <span
     className={[
-      'inline-flex items-center gap-1.5 rounded-full uppercase font-mono tracking-wider',
+      'inline-flex items-center gap-1.5 rounded-full uppercase tracking-wider',
       variantClasses[variant],
       sizeClasses[size],
       className,

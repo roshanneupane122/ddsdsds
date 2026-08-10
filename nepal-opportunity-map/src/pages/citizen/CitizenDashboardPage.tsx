@@ -20,16 +20,17 @@ export const CitizenDashboardPage = () => {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* ── WELCOME BANNER ── */}
+     
+           {/* ── WELCOME BANNER ── */}
       <section className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#ecfdf5_1px,transparent_1px)] [background-size:20px_20px]" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-emerald-100 text-xs font-mono font-bold border border-white/20 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-emerald-100 text-xs font-bold border border-white/20 uppercase tracking-wider">
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
               Citizen Intelligence Portal
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               Welcome, <span className="text-emerald-200">{user?.name || user?.email || 'Citizen'}</span>!
             </h1>
             <p className="text-emerald-50 text-sm max-w-xl leading-relaxed">
@@ -46,7 +47,8 @@ export const CitizenDashboardPage = () => {
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="border-white/40 text-white hover:bg-white/10 hover:border-white bg-transparent h-9"
+              // FIX: Added '!bg-transparent', '!border-white/40', '!text-white' to override default outline styles
+              className="!bg-transparent !border-white/40 !text-white hover:!bg-white/10 hover:!border-white h-9"
             >
               Logout
             </Button>
@@ -57,45 +59,45 @@ export const CitizenDashboardPage = () => {
       {/* ── STATS ── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card padding="md" className="bg-white border border-emerald-100 shadow-sm space-y-2">
-          <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Local Units Mapped</p>
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Local Units Mapped</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-slate-900">753</span>
+            <span className="text-2xl font-extrabold text-slate-900">753</span>
             <Badge variant="success" size="sm">100% COVERED</Badge>
           </div>
           <p className="text-xs text-slate-600 font-medium">All 7 provinces included</p>
         </Card>
 
         <Card padding="md" className="bg-white border border-emerald-100 shadow-sm space-y-2">
-          <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">AI Opportunities</p>
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">AI Opportunities</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-slate-900">1,420+</span>
+            <span className="text-2xl font-extrabold text-slate-900">1,420+</span>
             <Badge variant="success" size="sm">ACTIVE ENGINE</Badge>
           </div>
           <p className="text-xs text-slate-600 font-medium">Evidence-backed venture cards</p>
         </Card>
 
         <Card padding="md" className="bg-white border border-emerald-100 shadow-sm space-y-2">
-          <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Capital Pipeline</p>
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Capital Pipeline</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-slate-900">$85M+</span>
+            <span className="text-2xl font-extrabold text-slate-900">$85M+</span>
             <Badge variant="warning" size="sm">HIGH IMPACT</Badge>
           </div>
           <p className="text-xs text-slate-600 font-medium">Across agriculture &amp; tourism</p>
         </Card>
 
         <Card padding="md" className="bg-white border border-emerald-100 shadow-sm space-y-2">
-          <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Your Role</p>
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Your Role</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-slate-900">Citizen</span>
+            <span className="text-2xl font-extrabold text-slate-900">Citizen</span>
             <Badge variant="info" size="sm">VERIFIED</Badge>
           </div>
-          <p className="text-xs text-slate-600 font-medium font-mono">{user?.email}</p>
+          <p className="text-xs text-slate-600 font-medium">{user?.email}</p>
         </Card>
       </section>
 
       {/* ── MODULES ── */}
       <section className="space-y-5">
-        <h2 className="text-xl font-bold font-display text-slate-900 tracking-tight">Explore Modules</h2>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Explore Modules</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card hover className="bg-white border border-emerald-100 shadow-sm flex flex-col justify-between space-y-4">
             <div className="space-y-3">

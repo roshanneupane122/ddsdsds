@@ -54,7 +54,7 @@ export const DashboardPage = () => {
         <Card padding="md" className="bg-white border border-peak-100 shadow-xs space-y-2">
           <p className="text-2xs font-semibold text-peak-400 uppercase tracking-wider">Local Units Mapped</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-peak-800">753</span>
+            <span className="text-2xl font-extrabold text-peak-800">753</span>
             <Badge variant="info" size="sm">100% Coverage</Badge>
           </div>
           <p className="text-xs text-peak-500">All 7 provinces included</p>
@@ -63,7 +63,7 @@ export const DashboardPage = () => {
         <Card padding="md" className="bg-white border border-peak-100 shadow-xs space-y-2">
           <p className="text-2xs font-semibold text-peak-400 uppercase tracking-wider">AI Opportunities</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-peak-800">1,420+</span>
+            <span className="text-2xl font-extrabold text-peak-800">1,420+</span>
             <Badge variant="success" size="sm">Active Engine</Badge>
           </div>
           <p className="text-xs text-peak-500">Evidence-backed venture cards</p>
@@ -72,7 +72,7 @@ export const DashboardPage = () => {
         <Card padding="md" className="bg-white border border-peak-100 shadow-xs space-y-2">
           <p className="text-2xs font-semibold text-peak-400 uppercase tracking-wider">Capital Pipeline</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-peak-800">$85M+</span>
+            <span className="text-2xl font-extrabold text-peak-800">$85M+</span>
             <Badge variant="warning" size="sm">High Confidence</Badge>
           </div>
           <p className="text-xs text-peak-500">Across agriculture & tourism</p>
@@ -81,7 +81,7 @@ export const DashboardPage = () => {
         <Card padding="md" className="bg-white border border-peak-100 shadow-xs space-y-2">
           <p className="text-2xs font-semibold text-peak-400 uppercase tracking-wider">Account Role</p>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold font-display text-peak-800 capitalize">{user?.role || 'Entrepreneur'}</span>
+            <span className="text-2xl font-extrabold text-peak-800 capitalize">{user?.role || 'Entrepreneur'}</span>
             <Badge variant="muted" size="sm">Verified</Badge>
           </div>
           <p className="text-xs text-peak-500">{user?.email}</p>
@@ -90,7 +90,7 @@ export const DashboardPage = () => {
 
       {/* ── DASHBOARD HOME PLACEHOLDER CONTENT ── */}
       <section className="space-y-6">
-        <h2 className="text-xl font-bold font-display text-peak-700">Protected Dashboard Modules</h2>
+        <h2 className="text-xl font-bold text-peak-700">Protected Dashboard Modules</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card hover className="bg-white border border-peak-100 shadow-sm flex flex-col justify-between space-y-4">
