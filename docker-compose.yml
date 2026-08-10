@@ -37,6 +37,16 @@ services:
       - "8000:8000"
     volumes:
       - ./catalyst-project:/app
+
+  ml:
+    build: ./Ml
+    container_name: ml_service
+    restart: always
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./Ml:/app
+
   frontend:
     build: ./nepal-opportunity-map
     container_name: react_frontend

@@ -232,9 +232,9 @@ export interface ReportRequest {
   type: ReportType
   format: ReportFormat
   municipalityIds: string[]
-  includeRecommendations: boolean
-  includeDemographics: boolean
-  includeInfrastructure: boolean
+  includeRecommendations?: boolean
+  includeDemographics?: boolean
+  includeInfrastructure?: boolean
   title?: string
 }
 

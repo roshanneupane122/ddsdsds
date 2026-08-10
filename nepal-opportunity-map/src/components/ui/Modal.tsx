@@ -16,7 +16,8 @@ const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
-  xl: 'max-w-2xl',
+  xl: 'max-w-3xl',
+  '2xl': 'max-w-5xl',
 }
 
 export const Modal = ({
@@ -50,7 +51,7 @@ export const Modal = ({
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -65,27 +66,27 @@ export const Modal = ({
       {/* Panel */}
       <div
         className={[
-          'relative w-full bg-white border border-emerald-100/90 rounded-2xl shadow-2xl animate-slide-up overflow-hidden',
+          'relative w-full max-h-[90vh] flex flex-col bg-white border border-emerald-100/90 rounded-2xl shadow-2xl animate-slide-up overflow-hidden',
           sizeClasses[size],
         ].join(' ')}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-5 md:p-6 border-b border-emerald-100/80 bg-emerald-50/40">
+        <div className="shrink-0 flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-emerald-100/80 bg-emerald-50/40">
           <div>
             {title && (
-              <h2 id="modal-title" className="font-display font-bold text-xl text-slate-900">
+              <h2 id="modal-title" className="font-display font-bold text-lg sm:text-xl text-slate-900 pr-2">
                 {title}
               </h2>
             )}
             {description && (
-              <p id="modal-description" className="mt-1 text-xs text-slate-500 font-medium">
+              <p id="modal-description" className="mt-0.5 text-xs text-slate-500 font-medium">
                 {description}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="ml-4 p-1.5 rounded-xl text-slate-400 hover:text-emerald-700 hover:bg-emerald-100/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-emerald-700 hover:bg-emerald-100/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 shrink-0"
             aria-label="Close modal"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -95,11 +96,11 @@ export const Modal = ({
         </div>
 
         {/* Body */}
-        <div className="p-5 md:p-6">{children}</div>
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex justify-end gap-3 px-5 md:px-6 pb-5 pt-3 border-t border-emerald-100/80 bg-emerald-50/20">
+          <div className="shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 px-4 py-3 sm:px-6 sm:py-4 border-t border-emerald-100/80 bg-emerald-50/20">
             {footer}
           </div>
         )}

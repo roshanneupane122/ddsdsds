@@ -73,6 +73,11 @@ export const ENDPOINTS = {
     chat: '/analyze/chat',
   },
 
+  // ── Reports ────────────────────────────────────────────────
+  report: {
+    generate: '/report/generate',
+  },
+
   // ── Spatial Data ───────────────────────────────────────────
   spatial: {
     layers: '/spatial/layers',

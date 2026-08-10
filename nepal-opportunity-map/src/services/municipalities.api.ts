@@ -52,11 +52,145 @@ function extractCenterFromGeom(geom: any): { lat: number; lng: number } {
   }
 }
 
+// Default Fallback Municipalities to guarantee UI options are always populated
+export const DEFAULT_MUNICIPALITIES: MunicipalityListItem[] = [
+  {
+    id: 'tilottama-mun',
+    name: 'Tilottama Municipality',
+    nameNepali: 'तिलोत्तमा नगरपालिका',
+    type: 'municipality',
+    district: 'Rupandehi',
+    province: 5,
+    population: 149409,
+    area: 126.19,
+    center: { lat: 27.6186, lng: 83.4735 },
+    agricultureScore: 88,
+    tourismScore: 68,
+    infrastructureScore: 85,
+    economicScore: 90,
+    digitalScore: 78,
+  },
+  {
+    id: 'butwal-mun',
+    name: 'Butwal Sub-Metropolitan City',
+    nameNepali: 'बुटवल उपमहानगरपालिका',
+    type: 'sub_metropolitan_city',
+    district: 'Rupandehi',
+    province: 5,
+    population: 195054,
+    area: 101.61,
+    center: { lat: 27.7000, lng: 83.4500 },
+    agricultureScore: 65,
+    tourismScore: 75,
+    infrastructureScore: 92,
+    economicScore: 94,
+    digitalScore: 88,
+  },
+  {
+    id: 'kathmandu-mun',
+    name: 'Kathmandu Metropolitan City',
+    nameNepali: 'काठमाडौँ महानगरपालिका',
+    type: 'municipality',
+    district: 'Kathmandu',
+    province: 3,
+    population: 845767,
+    area: 49.45,
+    center: { lat: 27.7172, lng: 85.3240 },
+    agricultureScore: 40,
+    tourismScore: 95,
+    infrastructureScore: 98,
+    economicScore: 99,
+    digitalScore: 96,
+  },
+  {
+    id: 'pokhara-mun',
+    name: 'Pokhara Metropolitan City',
+    nameNepali: 'पोखरा महानगरपालिका',
+    type: 'municipality',
+    district: 'Kaski',
+    province: 4,
+    population: 518452,
+    area: 464.24,
+    center: { lat: 28.2096, lng: 83.9856 },
+    agricultureScore: 72,
+    tourismScore: 98,
+    infrastructureScore: 88,
+    economicScore: 92,
+    digitalScore: 85,
+  },
+  {
+    id: 'siddharthanagar-mun',
+    name: 'Siddharthanagar Municipality',
+    nameNepali: 'सिद्धार्थनगर नगरपालिका',
+    type: 'municipality',
+    district: 'Rupandehi',
+    province: 5,
+    population: 74436,
+    area: 36.03,
+    center: { lat: 27.5061, lng: 83.4485 },
+    agricultureScore: 70,
+    tourismScore: 82,
+    infrastructureScore: 88,
+    economicScore: 86,
+    digitalScore: 80,
+  },
+  {
+    id: 'sainamaina-mun',
+    name: 'Sainamaina Municipality',
+    nameNepali: 'सैनामैना नगरपालिका',
+    type: 'municipality',
+    district: 'Rupandehi',
+    province: 5,
+    population: 78393,
+    area: 162.18,
+    center: { lat: 27.6961, lng: 83.3331 },
+    agricultureScore: 82,
+    tourismScore: 60,
+    infrastructureScore: 78,
+    economicScore: 80,
+    digitalScore: 72,
+  },
+  {
+    id: 'devdaha-mun',
+    name: 'Devdaha Municipality',
+    nameNepali: 'देवदह नगरपालिका',
+    type: 'municipality',
+    district: 'Rupandehi',
+    province: 5,
+    population: 72468,
+    area: 136.95,
+    center: { lat: 27.6744, lng: 83.5631 },
+    agricultureScore: 85,
+    tourismScore: 78,
+    infrastructureScore: 75,
+    economicScore: 76,
+    digitalScore: 70,
+  },
+  {
+    id: 'lumbini-cultural-mun',
+    name: 'Lumbini Sanskritik Municipality',
+    nameNepali: 'लुम्बिनी सांस्कृतिक नगरपालिका',
+    type: 'municipality',
+    district: 'Rupandehi',
+    province: 5,
+    population: 88303,
+    area: 112.21,
+    center: { lat: 27.4819, lng: 83.2825 },
+    agricultureScore: 80,
+    tourismScore: 99,
+    infrastructureScore: 74,
+    economicScore: 78,
+    digitalScore: 68,
+  }
+]
+
 // Transformer for Backend MunicipalityRead -> Frontend MunicipalityListItem
 export function transformBackendMunicipality(m: any): MunicipalityListItem {
   let center = extractCenterFromGeom(m.geom)
-  const provNum = parseProvinceNumber(m.province)
-  const nameLower = (m.name || '').toLowerCase()
+  const provNum = parseProvinceNumber(m.province || m.province_id || m.province_name || 5)
+  const muniName = m.name || m.municipality_name || m.municipality || m.title || 'Municipality'
+  const distName = m.district || m.district_name || 'District'
+  const nameLower = muniName.toLowerCase()
 
   if (nameLower.includes('tilottama')) {
     center = { lat: 27.6186, lng: 83.4735 }
@@ -75,20 +209,20 @@ export function transformBackendMunicipality(m: any): MunicipalityListItem {
   }
 
   return {
-    id: m.municipality_id || m.id,
-    name: m.name || 'Municipality',
-    nameNepali: m.name_nepali || m.name || '',
+    id: m.municipality_id || m.id || `muni-${muniName.toLowerCase().replace(/ /g, '-')}`,
+    name: muniName,
+    nameNepali: m.name_nepali || m.nameNepali || muniName,
     type: (m.type as MunicipalityType) || 'municipality',
-    district: m.district || 'District',
+    district: distName,
     province: provNum,
-    population: m.total_population || 50000,
+    population: m.total_population || m.population || 50000,
     area: m.area || 150,
     center,
-    agricultureScore: m.agriculture_score ?? 65,
-    tourismScore: m.tourism_score ?? 70,
-    infrastructureScore: m.infrastructure_score ?? 60,
-    economicScore: m.economic_score ?? 68,
-    digitalScore: m.digital_score ?? 55,
+    agricultureScore: m.agriculture_score ?? m.agricultureScore ?? 65,
+    tourismScore: m.tourism_score ?? m.tourismScore ?? 70,
+    infrastructureScore: m.infrastructure_score ?? m.infrastructureScore ?? 60,
+    economicScore: m.economic_score ?? m.economicScore ?? 68,
+    digitalScore: m.digital_score ?? m.digitalScore ?? 55,
   }
 }
 
@@ -149,8 +283,8 @@ export function transformBackendMunicipalityDetail(m: any): MunicipalityDetail {
       urbanPopulationPercent: 45,
       workingAgePopulationPercent: 62,
       ageDistribution: [
-        { group: '0-14', percent: 24 },
-        { group: '15-64', percent: 66 },
+        { group: '0-14', percent: 22 },
+        { group: '15-64', percent: 68 },
         { group: '65+', percent: 10 },
       ],
       ethnicGroups: [
@@ -188,18 +322,28 @@ export const municipalitiesApi = {
     const limit = params?.limit ?? params?.pageSize ?? 100
     const search = params?.search?.trim() || undefined
 
-    const { data } = await apiClient.get<any[]>(ENDPOINTS.municipalities.list, {
-      params: {
-        skip,
-        limit,
-        ...(search ? { search, q: search } : {}),
-        ...(params?.province ? { province: params.province } : {}),
-      },
-    })
+    let transformed: MunicipalityListItem[] = []
+    try {
+      const { data } = await apiClient.get<any[]>(ENDPOINTS.municipalities.list, {
+        params: {
+          skip,
+          limit,
+          ...(search ? { search, q: search } : {}),
+          ...(params?.province ? { province: params.province } : {}),
+        },
+      })
+      if (Array.isArray(data) && data.length > 0) {
+        transformed = data.map(transformBackendMunicipality)
+      }
+    } catch (err) {
+      console.warn('Backend list municipalities error, fallback to default list:', err)
+    }
 
-    const transformed = (data || []).map(transformBackendMunicipality)
+    if (transformed.length === 0) {
+      transformed = DEFAULT_MUNICIPALITIES
+    }
 
-    // Filter locally if backend returned un-filtered data or for extra robustness
+    // Filter locally if search query is provided
     let filtered = transformed
     if (search) {
       const q = search.toLowerCase()
