@@ -2,21 +2,17 @@
 // Formatting utilities
 // ============================================================
 
-/** Format a number as a compact currency string (USD) */
+/** Format a number as a currency string in Nepali Rupees (NPR) */
 export const formatCurrency = (value: number, compact = false): string => {
   if (compact) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return `NPR ${new Intl.NumberFormat('en-US', {
       notation: 'compact',
       maximumFractionDigits: 1,
-    }).format(value)
+    }).format(value)}`
   }
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return `NPR ${new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0,
-  }).format(value)
+  }).format(value)}`
 }
 
 /** Format a large number compactly (1.2K, 3.4M) */

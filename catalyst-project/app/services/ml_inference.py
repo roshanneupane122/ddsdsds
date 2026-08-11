@@ -3,6 +3,18 @@ import joblib
 import pandas as pd
 from typing import Dict, Any, List
 
+SECTOR_MAPPING = {
+    "agriculture": ["Dairy Farm", "Fertilizer Store", "Agro-vet Clinic"],
+    "agro-processing": ["Dairy Farm", "Cold Storage", "Agro-vet Clinic"],
+    "tourism": ["Restaurant", "Boutique Hotel", "Cafe", "Travel Agency"],
+    "healthcare": ["Pharmacy", "Polyclinic", "Medical Supply Store"],
+    "education": ["Tutoring Center", "Bookstore", "Stationery Shop"],
+    "retail": ["Grocery Store", "Supermarket", "Hardware Store", "Fashion Boutique", "Mobile Repair Shop", "Electronics Shop", "Handicraft Shop", "Tailoring Shop"],
+    "logistics": ["Logistics/Freight Service", "Wholesale Distributor"],
+    "manufacturing": ["Hardware Store", "Handicraft Shop"], 
+    "digital services": ["IT Services", "Electronics Shop", "Mobile Repair Shop"]
+}
+
 class MLInferenceService:
     def __init__(self):
         self.model = None
@@ -83,37 +95,54 @@ class MLInferenceService:
         
         user_bus_clean = proposed_business.strip().lower()
         
-        user_match_idx = -1
-        for idx, cls in enumerate(top_classes):
-            if cls.lower() == user_bus_clean or user_bus_clean in cls.lower():
-                user_match_idx = idx
-                break
+        # Check if the requested business is a broad sector
+        mapped_classes = SECTOR_MAPPING.get(user_bus_clean)
+        
+        if mapped_classes:
+            # Aggregate probabilities for all mapped classes
+            agg_prob = 0.0
+            for i, cls in enumerate(top_classes):
+                if cls in mapped_classes:
+                    agg_prob += top_probs[i]
+            user_confidence = float(agg_prob * 100)
+            user_rank = 1 if user_confidence > 15.0 else 5 # Rough rank equivalent
+        else:
+            # Fallback to single class matching
+            user_match_idx = -1
+            for idx, cls in enumerate(top_classes):
+                if cls.lower() == user_bus_clean or user_bus_clean in cls.lower():
+                    user_match_idx = idx
+                    break
+                    
+            if user_match_idx != -1:
+                user_confidence = float(top_probs[user_match_idx] * 100)
+                user_rank = user_match_idx + 1
+            else:
+                user_confidence = 0.0
+                user_rank = len(top_classes)
                 
-        # Get top alternatives, skipping the user's matched choice if it exists
+        # Get top alternatives, skipping mapped classes if sector was requested
         alternatives = []
         for i in range(len(top_classes)):
             if len(alternatives) >= 4:
                 break
-            if i != user_match_idx:
-                alternatives.append({
-                    "business": top_classes[i],
-                    "confidence": float(top_probs[i] * 100)
-                })
-        
-        if user_match_idx != -1:
-            user_confidence = float(top_probs[user_match_idx] * 100)
-            user_rank = user_match_idx + 1
-        else:
-            user_confidence = 0.0
-            user_rank = len(top_classes)
+            if mapped_classes and top_classes[i] in mapped_classes:
+                continue
+            if not mapped_classes and user_match_idx == i:
+                continue
+                
+            alternatives.append({
+                "business": top_classes[i],
+                "confidence": float(top_probs[i] * 100)
+            })
             
-        is_feasible = (user_rank <= 3) or (user_confidence >= 15.0)
+        is_feasible = user_confidence >= 15.0
         decision_verdict = "YES, RECOMMENDED" if is_feasible else "NO, NOT RECOMMENDED"
         
         return {
             "proposed_business": proposed_business,
             "recommendation": decision_verdict,
-            "feasibility_score": user_confidence,
+            "feasibility_score": min(user_confidence, 100.0), # cap at 100
             "user_rank": user_rank,
             "alternatives": alternatives
         }

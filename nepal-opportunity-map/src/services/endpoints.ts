@@ -78,4 +78,9 @@ export const ENDPOINTS = {
   spatial: {
     layers: '/spatial/layers',
   },
+
+  // ── Report Generation ──────────────────────────────────────
+  report: {
+    generate: '/report/generate',
+  },
 } as const

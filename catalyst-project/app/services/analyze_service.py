@@ -32,116 +32,131 @@ class AnalyzeService:
         self.scaled_data = self.scaler.fit_transform(features_only)
         self.is_fitted = True
 
-    def calculate_opportunity_score(self, municipality_name: str, ward_no: int, proposed_business: str) -> Dict[str, Any]:
+    def calculate_opportunity_score(self, municipality_name: str, ward_no: int, proposed_business: str, override_features: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Calculates a deterministic 0-100 Opportunity Score combining ML probability 
         and local economic indices, and generates Explainable AI (XAI) factors.
         """
-        ward_features = ml_service.get_ward_features(municipality_name, ward_no)
+        ward_features = override_features if override_features else ml_service.get_ward_features(municipality_name, ward_no)
         if not ward_features:
-            return None
+            # Fallback to municipality average or standard baseline indicators
+            if ml_service.ward_data is not None:
+                muni_df = ml_service.ward_data[ml_service.ward_data['municipality_name'].str.lower() == municipality_name.strip().lower()]
+                if not muni_df.empty:
+                    ward_features = muni_df.mean(numeric_only=True).to_dict()
+
+            if not ward_features:
+                ward_features = {
+                    'population': 45000,
+                    'footfall_index': 65,
+                    'purchasing_power_index': 70,
+                    'electricity_access_pct': 85,
+                    'internet_access_pct': 65,
+                    'water_access_pct': 75,
+                    'road_distance_km': 3.5,
+                    'market_distance_km': 4.0,
+                    'business_density': 12,
+                    'crime_rate_index': 15,
+                    'flood_risk_index': 20,
+                    'agriculture_pct': 40,
+                    'tourist_distance_km': 10
+                }
             
         ml_eval = ml_service.evaluate(municipality_name, ward_features, proposed_business)
         ml_confidence = ml_eval['feasibility_score'] # 0-100
+        sector = proposed_business.strip().lower()
         
-        # Breakdown Factors (0-100 scales)
+        # Base indicators
         footfall = min(ward_features.get('footfall_index', 50), 100)
         purchasing_power = min(ward_features.get('purchasing_power_index', 50), 100)
-        
-        # Accessibility (derived from road/market distance)
-        road_dist = ward_features.get('road_distance_km', 5)
-        market_dist = ward_features.get('market_distance_km', 10)
-        accessibility = max(0, 100 - (road_dist * 5) - (market_dist * 2))
-        
-        # Infrastructure Readiness
         elec = ward_features.get('electricity_access_pct', 50)
         inet = ward_features.get('internet_access_pct', 50)
-        infrastructure = (elec + inet) / 2
-        
-        # Competition (Inverse of business density, scaled)
+        water = ward_features.get('water_access_pct', 50)
+        road_dist = ward_features.get('road_distance_km', 5)
+        market_dist = ward_features.get('market_distance_km', 10)
         density = ward_features.get('business_density', 50)
-        competition = min(density * 1.5, 100) # Higher means more competition
-        
-        # Business Risk (Flood, Landslide, Crime)
         crime = ward_features.get('crime_rate_index', 50)
         flood = ward_features.get('flood_risk_index', 50)
+        agri = ward_features.get('agriculture_pct', 10)
+        tourist_dist = ward_features.get('tourist_distance_km', 20)
+
+        # Sector-specific calculations
+        demand = purchasing_power
+        infrastructure = (elec + inet) / 2
+        accessibility = max(0, 100 - (road_dist * 5) - (market_dist * 2))
+        competition = min(density * 1.5, 100)
         risk = (crime + flood) / 2
         
-        # Overall Opportunity Score
-        # 30% ML, 20% Purchasing, 20% Infrastructure, 15% Accessibility, 15% Footfall
-        score = (ml_confidence * 0.3) + (purchasing_power * 0.2) + (infrastructure * 0.2) + (accessibility * 0.15) + (footfall * 0.15)
+        positive_factors = []
+        negative_factors = []
         
-        # Penalize for extreme competition or risk
+        if "agri" in sector:
+            demand = max(agri, purchasing_power)
+            infrastructure = (elec + water) / 2
+            if agri > 60: positive_factors.append("Strong agricultural base and farming participation.")
+            if water < 60: negative_factors.append("Limited water access or irrigation infrastructure.")
+        elif "tour" in sector:
+            demand = max(0, 100 - (tourist_dist * 2))
+            footfall = min(footfall * 1.2, 100)
+            if tourist_dist < 5: positive_factors.append("Close proximity to major tourist attractions.")
+            if infrastructure < 60: negative_factors.append("Infrastructure might not support high-end tourism.")
+        elif "digital" in sector or "it" in sector:
+            demand = purchasing_power
+            infrastructure = inet
+            if inet > 80: positive_factors.append("Excellent digital connectivity.")
+            if inet < 50: negative_factors.append("Poor internet penetration restricts digital services.")
+        elif "logistics" in sector or "manufacturing" in sector:
+            demand = min(density * 2, 100)
+            accessibility = max(0, 100 - (road_dist * 8))
+            if road_dist < 2: positive_factors.append("Excellent road accessibility for freight.")
+            if elec < 80: negative_factors.append("Power grid may not support heavy industrial loads.")
+        else:
+            if footfall > 75: positive_factors.append("High local footfall and strong market demand.")
+            if purchasing_power > 70: positive_factors.append("Strong local purchasing power.")
+            if accessibility > 75: positive_factors.append("Good road and market accessibility.")
+            if infrastructure < 60: negative_factors.append("Infrastructure readiness is currently lacking.")
+            if competition > 70: negative_factors.append("Existing business competition is relatively high.")
+            
+        if ml_confidence >= 50: positive_factors.append("ML model strongly aligns this sector with local ward features.")
+        elif ml_confidence < 20 and ml_confidence > 0: negative_factors.append("ML model finds low historical precedent for this sector here.")
+        
+        if risk > 60: negative_factors.append("Environmental or security risk factors are elevated.")
+
+        # Overall Opportunity Score (30% ML, 70% Deterministic)
+        if ml_confidence > 0:
+            score = (ml_confidence * 0.3) + (demand * 0.2) + (infrastructure * 0.2) + (accessibility * 0.15) + (footfall * 0.15)
+        else:
+            base_score = (demand * 0.2) + (infrastructure * 0.2) + (accessibility * 0.15) + (footfall * 0.15)
+            score = base_score / 0.7
+            
+        # Penalties
         if competition > 80: score -= 10
         if risk > 70: score -= 10
         
         score = min(max(score, 0), 100)
         
-        # Determine Opportunity Level
-        if score >= 90:
-            level = "EXCELLENT OPPORTUNITY"
-        elif score >= 75:
-            level = "STRONG OPPORTUNITY"
+        if score >= 80:
+            interpretation = f"The municipality shows excellent potential for {proposed_business}, driven primarily by strong readiness and market factors."
         elif score >= 60:
-            level = "MODERATE OPPORTUNITY"
-        elif score >= 40:
-            level = "WEAK OPPORTUNITY"
+            interpretation = f"The municipality shows moderate potential for {proposed_business}. While some drivers are positive, specific infrastructure or market constraints exist."
         else:
-            level = "LOW OPPORTUNITY"
-            
-        # Generate Procedural XAI Factors
-        positive_factors = []
-        negative_factors = []
-        
-        if footfall > 75: positive_factors.append("High local footfall and strong market demand.")
-        elif footfall < 40: negative_factors.append("Lower than average market demand and footfall.")
-        
-        if purchasing_power > 70: positive_factors.append("Strong local purchasing power.")
-        elif purchasing_power < 45: negative_factors.append("Purchasing power is moderate rather than high.")
-        
-        if accessibility > 75: positive_factors.append("Good road and market accessibility.")
-        elif accessibility < 50: negative_factors.append("Location has logistical and accessibility challenges.")
-        
-        if infrastructure > 80: positive_factors.append("Adequate electricity and internet availability.")
-        elif infrastructure < 60: negative_factors.append("Infrastructure readiness is currently lacking.")
-        
-        if competition > 70: negative_factors.append("Existing business competition is relatively high.")
-        elif competition < 30: positive_factors.append("Low existing competition presents a market gap.")
-        
-        if risk > 60: negative_factors.append("Environmental or security risk factors are elevated.")
-        
-        if ml_confidence >= 75: positive_factors.append("AI model strongly aligns this business type with the location's features.")
-        elif ml_confidence < 30: negative_factors.append("AI model finds low historical precedent for this business type here.")
-        
-        # Base description
-        summary = f"{proposed_business} appears to be a {level.lower()} in {municipality_name} based on available demographic, accessibility, purchasing-power, and competition indicators."
-        
+            interpretation = f"The municipality currently shows weak potential for {proposed_business} due to significant infrastructural or demand constraints."
+
         return {
-            "proposed_business": proposed_business,
-            "location": f"{municipality_name} - Ward {ward_no}",
+            "proposed_business": proposed_business.upper(),
             "opportunity_score": round(score),
-            "opportunity_level": level,
-            "summary": summary,
-            "ml_confidence": round(ml_confidence),
-            "alternatives": ml_eval.get('alternatives', []),
+            "ml_feasibility": round(ml_confidence) if ml_confidence > 0 else 0,
             "breakdown": {
-                "market_demand": round(footfall),
-                "purchasing_power": round(purchasing_power),
-                "accessibility": round(accessibility),
+                "market_demand": round(demand),
                 "infrastructure_readiness": round(infrastructure),
+                "accessibility": round(accessibility),
+                "footfall": round(footfall),
                 "competition": round(competition),
                 "business_risk": round(risk)
             },
-            "positive_factors": positive_factors,
-            "negative_factors": negative_factors,
-            "data_used": {
-                "population": ward_features.get('population', 0),
-                "purchasing_power_index": round(purchasing_power),
-                "business_density": round(density),
-                "road_distance_km": road_dist,
-                "market_distance_km": market_dist,
-                "infrastructure_index": round(infrastructure)
-            }
+            "positive_factors": positive_factors if positive_factors else ["Sufficient baseline conditions."],
+            "negative_factors": negative_factors if negative_factors else ["No major constraints identified."],
+            "interpretation": interpretation
         }
 
     def find_similar_municipalities(self, municipality_name: str, top_k: int = 3) -> List[Dict[str, Any]]:
@@ -193,27 +208,51 @@ class AnalyzeService:
         gaps = []
         
         # Check Electricity Access
-        if ward_features.get('electricity_access_pct', 100) < 80:
+        elec = ward_features.get('electricity_access_pct', 100)
+        if elec < 80:
             gaps.append({
                 "type": "Power Grid",
                 "severity": "High",
-                "description": f"Only {ward_features.get('electricity_access_pct')}% electricity access."
+                "score": round(100 - elec),
+                "evidence": f"Electricity access is {elec}%.",
+                "description": "Insufficient power infrastructure for commercial or industrial expansion.",
+                "priority": "HIGH"
             })
             
         # Check Internet Access
-        if ward_features.get('internet_access_pct', 100) < 60:
+        inet = ward_features.get('internet_access_pct', 100)
+        if inet < 60:
             gaps.append({
                 "type": "Digital Connectivity",
-                "severity": "Medium",
-                "description": f"Low internet penetration at {ward_features.get('internet_access_pct')}%."
+                "severity": "Medium" if inet > 40 else "High",
+                "score": round(100 - inet),
+                "evidence": f"Internet penetration at {inet}%.",
+                "description": "Digital readiness is too low to support modern tech services.",
+                "priority": "MEDIUM" if inet > 40 else "HIGH"
             })
             
-        # Check Road Connectivity (if development index is very low)
-        if ward_features.get('development_index', 100) < 30:
+        # Check Road Connectivity
+        hosp = ward_features.get('hospital_distance_km', 0)
+        road = ward_features.get('road_distance_km', 0)
+        market = ward_features.get('market_distance_km', 0)
+        if road > 5 or market > 10:
             gaps.append({
-                "type": "Road / Transport",
+                "type": "Market Access",
                 "severity": "High",
-                "description": "General development index is critically low, suggesting severe transport and infrastructure deficits."
+                "score": round(min((road + market)*5, 100)),
+                "evidence": f"Average market distance: {market}km. Road distance: {road}km.",
+                "description": "Poor transport logistics limit agricultural and manufacturing trade.",
+                "priority": "HIGH"
+            })
+
+        if hosp > 10:
+            gaps.append({
+                "type": "Healthcare",
+                "severity": "High",
+                "score": round(min(hosp*8, 100)),
+                "evidence": f"Average hospital distance is {hosp}km.",
+                "description": "Critical lack of accessible healthcare facilities.",
+                "priority": "HIGH"
             })
             
         # If no major gaps found
@@ -221,7 +260,10 @@ class AnalyzeService:
             gaps.append({
                 "type": "None",
                 "severity": "Low",
-                "description": "Infrastructure levels are adequate relative to district averages."
+                "score": 0,
+                "evidence": "Indicators above threshold.",
+                "description": "Infrastructure levels are adequate relative to district averages.",
+                "priority": "LOW"
             })
             
         return {
@@ -267,8 +309,17 @@ class AnalyzeService:
         if agg.get('flood_risk_index', 0) > 0.6: challenges.append("Elevated flood risk requires mitigation.")
         if agg.get('business_density', 10) < 5: challenges.append("Low commercial density suggests lack of business infrastructure.")
 
-        # Top Opportunities (using mean features for the whole municipality)
-        ml_eval = ml_service.evaluate(municipality_name, agg, "Retail") # dummy to get alternatives
+        # Top Opportunities - generate full breakdowns for predefined sectors
+        sectors_to_check = ["Agriculture", "Tourism", "Retail", "Healthcare", "Digital Services", "Logistics", "Manufacturing"]
+        opportunities = []
+        for sector in sectors_to_check:
+            opp = self.calculate_opportunity_score(municipality_name, 1, sector, override_features=agg)
+            if opp:
+                opportunities.append(opp)
+                
+        # Sort opportunities by score descending and take top 5
+        opportunities.sort(key=lambda x: x.get('opportunity_score', 0), reverse=True)
+        top_opportunities = opportunities[:5]
         
         # Infrastructure gaps based on municipality average
         gaps = []
@@ -281,6 +332,19 @@ class AnalyzeService:
         if agg.get('bank_distance_km', 0) > 3:
             gaps.append({"type": "Financial Access", "severity": "Low", "description": f"Average bank distance is {round(agg['bank_distance_km'], 1)}km."})
 
+        def _get_status(val):
+            if val >= 75: return "High"
+            if val >= 50: return "Moderate"
+            return "Low"
+
+        # Priorities
+        priorities = []
+        if digital < 50: priorities.append("Digital Connectivity & IT Infrastructure")
+        if infrastructure < 60: priorities.append("Basic Infrastructure & Road Networks")
+        if economic < 50: priorities.append("Commercial Zone Development")
+        if social < 60: priorities.append("Healthcare & Education Facilities")
+        if len(priorities) == 0: priorities.append("Advanced Industrial Hubs")
+        if len(priorities) == 1: priorities.append("Agricultural Processing Facilities")
         return {
             "name": municipality_name,
             "overview": {
@@ -289,12 +353,12 @@ class AnalyzeService:
                 "urbanization_rate": round(agg.get('urbanization_rate', 0), 1)
             },
             "development_index": {
-                "overall": round(dev_overall),
-                "economic": round(economic),
-                "infrastructure": round(infrastructure),
-                "social": round(social),
-                "accessibility": round(accessibility),
-                "digital": round(digital)
+                "overall": {"score": round(dev_overall), "status": _get_status(dev_overall), "text": "Aggregated index of all socio-economic factors."},
+                "economic": {"score": round(economic), "status": _get_status(economic), "text": "Based on business density and purchasing power."},
+                "infrastructure": {"score": round(infrastructure), "status": _get_status(infrastructure), "text": "Based on electricity, water, and internet access."},
+                "social": {"score": round(social), "status": _get_status(social), "text": "Derived from school and hospital accessibility."},
+                "accessibility": {"score": round(accessibility), "status": _get_status(accessibility), "text": "Derived from road and market distance."},
+                "digital": {"score": round(digital), "status": _get_status(digital), "text": "Based on internet penetration."}
             },
             "economy": {
                 "average_income_npr": round(agg.get('average_income_npr', 0)),
@@ -320,7 +384,8 @@ class AnalyzeService:
             "strengths": strengths,
             "challenges": challenges,
             "gaps": gaps,
-            "opportunities": ml_eval.get('alternatives', [])[:5],
+            "opportunities": top_opportunities,
+            "priorities": priorities[:4],
             "similar_municipalities": self.find_similar_municipalities(municipality_name, top_k=3)
         }
 

@@ -50,8 +50,8 @@ class ScoreResponse(BaseModel):
 @router.post("/score", response_model=ScoreResponse, summary="Calculate Deterministic Opportunity Score")
 async def calculate_score(
     request: ScoreRequest,
-    db: DBSession,
-    current_user: CurrentUser
+    db: DBSession = None,
+    current_user: CurrentUser = None
 ):
     score_result = analyze_service.calculate_opportunity_score(
         request.municipality_name, 

@@ -67,18 +67,16 @@ export const AdminDashboardPage = () => {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <Link to="/admin/municipalities">
-              <Button size="sm" className="bg-white text-emerald-900 hover:bg-emerald-50 font-bold shadow-md h-9">
+              <button className="bg-white hover:bg-emerald-50 text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all cursor-pointer">
                 Manage Municipalities
-              </Button>
+              </button>
             </Link>
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={handleLogout}
-              className="border-white/40 text-white hover:bg-white/10 hover:border-white bg-transparent h-9"
+              className="border border-white/40 hover:border-white text-white hover:bg-white/15 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
             >
               Logout
-            </Button>
+            </button>
           </div>
         </div>
       </section>
