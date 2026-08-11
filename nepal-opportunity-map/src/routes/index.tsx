@@ -11,6 +11,12 @@ import { Outlet } from 'react-router-dom'
 const SalesPage = lazy(() => import('@/pages/SalesPage/SalesPage').then((m) => ({ default: m.SalesPage })))
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })))
+const ForgotPasswordPage = lazy(() =>
+  import('@/pages/auth/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage }))
+)
+const ResetPasswordPage = lazy(() =>
+  import('@/pages/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage }))
+)
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage/NotFoundPage').then((m) => ({ default: m.NotFoundPage })))
 
 // ──────────────────────────────────────────────
@@ -95,6 +101,26 @@ export const router = createBrowserRouter([
           <S>
             <PublicRoute>
               <RegisterPage />
+            </PublicRoute>
+          </S>
+        ),
+      },
+      {
+        path: 'forgot-password',
+        element: (
+          <S>
+            <PublicRoute>
+              <ForgotPasswordPage />
+            </PublicRoute>
+          </S>
+        ),
+      },
+      {
+        path: 'reset-password',
+        element: (
+          <S>
+            <PublicRoute>
+              <ResetPasswordPage />
             </PublicRoute>
           </S>
         ),

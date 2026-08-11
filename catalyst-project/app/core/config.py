@@ -27,6 +27,16 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str = "nepal_opportunity_map"
 
+    # SMTP / Google Email Configuration
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    EMAILS_FROM_EMAIL: str = ""
+    EMAILS_FROM_NAME: str = "Nepal Opportunity Map"
+    RESET_TOKEN_EXPIRE_MINUTES: int = 15
+    FRONTEND_URL: str = "http://localhost:5173"
+
     @computed_field
     @property
     def ASYNC_DATABASE_URI(self) -> str:

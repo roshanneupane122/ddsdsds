@@ -115,5 +115,23 @@ export const authApi = {
   logout: async (): Promise<void> => {
     tokenStore.clear()
   },
+
+  /** Request password reset email */
+  forgotPassword: async (email: string): Promise<{ message: string }> => {
+    const { data } = await apiClient.post<{ message: string }>(
+      ENDPOINTS.auth.forgotPassword,
+      { email }
+    )
+    return data
+  },
+
+  /** Complete password reset with token */
+  resetPassword: async (token: string, newPassword: string): Promise<{ message: string }> => {
+    const { data } = await apiClient.post<{ message: string }>(
+      ENDPOINTS.auth.resetPassword,
+      { token, new_password: newPassword }
+    )
+    return data
+  },
 }
 

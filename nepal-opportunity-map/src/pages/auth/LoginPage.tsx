@@ -81,6 +81,14 @@ export const LoginPage = () => {
               error={errors.password?.message}
               {...register('password')}
             />
+            <div className="flex justify-end pt-1">
+              <Link
+                to="/forgot-password"
+                className="text-xs font-semibold text-emerald-700 hover:underline hover:text-emerald-800 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           <Button 

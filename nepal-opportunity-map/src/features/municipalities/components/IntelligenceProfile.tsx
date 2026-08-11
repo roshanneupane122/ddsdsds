@@ -78,25 +78,25 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
       <section>
         <h2 className="text-xl font-bold font-display text-slate-900 mb-4">Municipality Development Index</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-slate-900 text-white rounded-2xl p-5 shadow-md border border-emerald-600/50 flex flex-col justify-between">
+          <div className="bg-white text-slate-900 rounded-2xl p-5 shadow-sm border border-emerald-200 flex flex-col justify-between">
             <div>
-              <span className="text-xs font-mono font-bold text-emerald-300 uppercase tracking-wider block mb-1">
+              <span className="text-xs font-mono font-bold text-emerald-800 uppercase tracking-wider block mb-1">
                 Overall Index
               </span>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-5xl font-black font-mono text-white tracking-tight">
+                <span className="text-5xl font-black font-mono text-emerald-700 tracking-tight">
                   {(() => {
                     const ov = intelligence.development_index?.overall
                     const score = typeof ov === 'object' ? ov?.score : ov
                     return score != null ? score : 'N/A'
                   })()}
                 </span>
-                <span className="text-base font-bold text-emerald-300 font-mono">/ 100</span>
+                <span className="text-base font-bold text-emerald-600 font-mono">/ 100</span>
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center justify-between text-xs text-emerald-200">
+            <div className="mt-3 pt-3 border-t border-emerald-100 flex items-center justify-between text-xs text-slate-600">
               <span>Composite Index Status</span>
-              <span className="font-bold text-emerald-300 font-mono uppercase bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-700">
+              <span className="font-bold text-emerald-800 font-mono uppercase bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                 {(() => {
                   const ov = intelligence.development_index?.overall
                   const status = typeof ov === 'object' ? ov?.status : 'Moderate'
@@ -279,19 +279,19 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
           {intelligence.opportunities?.map((opp: any, i: number) => (
             <div 
               key={i} 
-              className="bg-slate-900 text-white rounded-2xl p-4 border border-emerald-500/30 shadow-md flex flex-col justify-between hover:border-emerald-400 hover:scale-[1.02] transition-all duration-200"
+              className="bg-white text-slate-900 rounded-2xl p-4 border border-emerald-200/80 shadow-sm flex flex-col justify-between hover:border-emerald-400 hover:shadow-md hover:scale-[1.02] transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800 uppercase tracking-wider">
+                <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
                   Rank #{i+1}
                 </span>
               </div>
-              <p className="font-bold text-sm text-slate-100 leading-snug my-2 min-h-[40px]">
+              <p className="font-bold text-sm text-slate-900 leading-snug my-2 min-h-[40px]">
                 {opp.proposed_business || opp.business}
               </p>
-              <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-800 text-xs">
-                <span className="text-slate-400 font-medium font-mono uppercase text-[10px]">Score</span>
-                <span className="font-black text-emerald-400 text-base font-mono">
+              <div className="flex items-center justify-between mt-auto pt-3 border-t border-emerald-100 text-xs">
+                <span className="text-slate-500 font-medium font-mono uppercase text-[10px]">Score</span>
+                <span className="font-black text-emerald-700 text-base font-mono">
                   {Math.round(opp.opportunity_score ?? opp.confidence ?? 0)}
                 </span>
               </div>
@@ -327,23 +327,23 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
 
       {/* 8. AI ANALYST */}
       <section>
-        <Card padding="lg" className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <Card padding="lg" className="bg-white text-slate-900 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-200 shadow-sm">
           <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold font-display mb-2">AI Municipality Analyst</h2>
-            <p className="text-slate-300 text-sm leading-relaxed mb-4">
+            <h2 className="text-2xl font-bold font-display text-slate-900 mb-2">AI Municipality Analyst</h2>
+            <p className="text-slate-600 text-sm leading-relaxed mb-4">
               Have questions about {intelligence.name}? Ask the AI Assistant to deeply analyze the sectors, explain the infrastructure gaps, or validate business ideas specific to this municipality's data profile.
             </p>
             <div className="flex flex-wrap gap-2 mb-6">
-              <Badge variant="muted" className="bg-white/10 text-slate-200 border-white/20">"What are the biggest infrastructure gaps?"</Badge>
-              <Badge variant="muted" className="bg-white/10 text-slate-200 border-white/20">"Why is agriculture important here?"</Badge>
-              <Badge variant="muted" className="bg-white/10 text-slate-200 border-white/20">"Compare with Tilottama"</Badge>
+              <Badge variant="muted" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-medium">"What are the biggest infrastructure gaps?"</Badge>
+              <Badge variant="muted" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-medium">"Why is agriculture important here?"</Badge>
+              <Badge variant="muted" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-medium">"Compare with Tilottama"</Badge>
             </div>
-            <Button onClick={handleAskAI} className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold border-transparent">
+            <Button onClick={handleAskAI} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold border-transparent shadow-sm px-6 py-2.5 cursor-pointer">
               Ask AI About This Municipality
             </Button>
           </div>
           <div className="hidden md:block">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <svg className="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>

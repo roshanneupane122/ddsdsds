@@ -1,7 +1,7 @@
 import enum
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import Enum as SQLEnum, String, TIMESTAMP, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -43,6 +43,16 @@ class User(Base):
         index=True
     )
 
+    reset_token: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+    )
+    reset_token_expires_at: Mapped[Optional[datetime]] = mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=True,
+    )
+
     # Standard audit timestamps
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
@@ -61,4 +71,4 @@ class User(Base):
         "SavedRecommendation", 
         back_populates="user", 
         cascade="all, delete-orphan"
-    )
+    )

@@ -35,6 +35,20 @@ async def get_user_by_email(
     return result.scalar_one_or_none()
 
 
+async def get_user_by_reset_token(
+    db: AsyncSession,
+    token: str,
+) -> Optional[User]:
+    """
+    Retrieve a user by password reset token.
+    """
+    result = await db.execute(
+        select(User).where(User.reset_token == token)
+    )
+    return result.scalar_one_or_none()
+
+
+
 async def get_users(
     db: AsyncSession,
     *,
