@@ -12,6 +12,9 @@ WORKDIR /app
 # Copy the requirements file to the working directory
 COPY requirements.txt .
 
+# Install the CPU version of PyTorch to save RAM and disk space
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
 # Install the Python dependencies
 # We use --no-cache-dir to keep the image size small
 RUN pip install --no-cache-dir -r requirements.txt

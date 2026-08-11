@@ -22,3 +22,9 @@ class RecommendationResponse(BaseModel):
     recommended_business: str
     confidence_score: str
     reasoning: str
+
+class ChatbotRequest(BaseModel):
+    user_input: str
+
+class ChatbotResponse(BaseModel):
+    response: str

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 
 export const AiAnalystChat = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'ai', text: 'Hello! I am your Catalyst AI Analyst powered by Llama 3.1. Ask me about any municipality in Rupandehi — opportunities, gaps, business viability, or comparisons.' }])
+  const [messages, setMessages] = useState([{ role: 'ai', text: 'Hello! I am your Catalyst AI Analyst powered by Qwen 0.5B. Ask me about any municipality in Rupandehi — opportunities, gaps, business viability, or comparisons.' }])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeMunicipality, setActiveMunicipality] = useState<string | null>(null)
@@ -15,23 +15,20 @@ export const AiAnalystChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const sendMessage = async (text: string, municipalityName?: string) => {
+  const sendMessage = async (text: string) => {
     setIsLoading(true)
     try {
-      const body: Record<string, unknown> = { message: text }
-      const muni = municipalityName || activeMunicipality
-      if (muni) body.municipality_name = muni
+      const body = { user_input: text }
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/analyze/chat`, {
+      // Hitting the new ml_backend on port 8001
+      const res = await fetch(`http://localhost:8001/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
       if (res.ok) {
         const data = await res.json()
-        // Extract municipality context from response if detected
-        if (data.municipality_context_used) setActiveMunicipality(data.municipality_context_used)
-        setMessages(prev => [...prev, { role: 'ai', text: data.reply }])
+        setMessages(prev => [...prev, { role: 'ai', text: data.response }])
       } else {
         setMessages(prev => [...prev, { role: 'ai', text: 'The AI service is temporarily unavailable. Please try again in a moment.' }])
       }
@@ -52,7 +49,7 @@ export const AiAnalystChat = () => {
       setSearchParams(newParams)
       const initialUserText = `Tell me about opportunities and infrastructure gaps in ${context}.`
       setMessages(prev => [...prev, { role: 'user', text: initialUserText }])
-      sendMessage(initialUserText, context)
+      sendMessage(initialUserText)
     }
   }, [searchParams, setSearchParams])
 
@@ -115,7 +112,7 @@ export const AiAnalystChat = () => {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-                  <span className="text-xs ml-1 font-mono">Llama 3.1 thinking...</span>
+                  <span className="text-xs ml-1 font-mono">Qwen thinking...</span>
                 </div>
               </div>
             )}
