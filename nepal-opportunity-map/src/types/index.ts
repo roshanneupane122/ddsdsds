@@ -215,6 +215,26 @@ export interface Recommendation {
   createdAt: string // ISO date
 }
 
+export interface ScoreResponse {
+  location: string
+  proposed_business: string
+  summary: string
+  opportunity_score: number
+  opportunity_level: string
+  breakdown: {
+    market_demand: number
+    purchasing_power: number
+    accessibility: number
+    infrastructure_readiness: number
+    competition: number
+    business_risk: number
+  }
+  positive_factors: string[]
+  negative_factors: string[]
+  alternatives: { business: string; confidence: number }[]
+  ml_confidence: number
+}
+
 export interface SupportingDataPoint {
   label: string
   value: string | number

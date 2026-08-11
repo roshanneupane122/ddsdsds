@@ -345,7 +345,6 @@ class AnalyzeService:
         if social < 60: priorities.append("Healthcare & Education Facilities")
         if len(priorities) == 0: priorities.append("Advanced Industrial Hubs")
         if len(priorities) == 1: priorities.append("Agricultural Processing Facilities")
-
         return {
             "name": municipality_name,
             "overview": {
