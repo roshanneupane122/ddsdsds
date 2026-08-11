@@ -236,33 +236,33 @@ export const ReportGenerator = () => {
 
         {/* Preview of loaded intelligence */}
         {intelligence && !intelLoading && (
-          <div className="bg-slate-950 text-white rounded-2xl p-5 space-y-4 border border-slate-800 shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <div className="bg-emerald-50/60 text-slate-900 rounded-2xl p-5 space-y-4 border border-emerald-200 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between border-b border-emerald-200 pb-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="font-mono text-xs uppercase tracking-wider text-emerald-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                <span className="font-mono text-xs uppercase tracking-wider text-emerald-800 font-bold">
                   Executive Report Preview
                 </span>
               </div>
-              <span className="text-[11px] font-mono text-emerald-300 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-mono text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
                 PDF Ready
               </span>
             </div>
             
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">Target Location</span>
-                <strong className="text-slate-100 font-display text-sm block leading-snug">{activeMuni.name} ({activeMuni.district})</strong>
+              <div className="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 block font-mono uppercase tracking-wider font-bold">Target Location</span>
+                <strong className="text-slate-900 font-display text-sm block leading-snug">{activeMuni.name} ({activeMuni.district})</strong>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">Overall Dev Index</span>
-                <strong className="text-emerald-400 font-mono text-sm block leading-snug">
+              <div className="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs space-y-1">
+                <span className="text-[10px] text-slate-500 block font-mono uppercase tracking-wider font-bold">Overall Dev Index</span>
+                <strong className="text-emerald-700 font-mono text-sm block leading-snug">
                   {typeof intelligence.development_index?.overall === 'object' ? (intelligence.development_index?.overall?.score ?? 75) : (intelligence.development_index?.overall ?? 75)} / 100
                 </strong>
               </div>
-              <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1 col-span-2">
-                <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">Top Ranked Opportunity</span>
-                <strong className="text-white text-xs font-semibold block leading-snug">
+              <div className="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs space-y-1 col-span-2">
+                <span className="text-[10px] text-slate-500 block font-mono uppercase tracking-wider font-bold">Top Ranked Opportunity</span>
+                <strong className="text-slate-900 text-xs font-bold block leading-snug">
                   {intelligence.opportunities?.[0]?.proposed_business || intelligence.opportunities?.[0]?.business || 'Agro-processing & Cold Storage Hub'}
                 </strong>
               </div>
