@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 
 export const AiAnalystChat = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState([{ role: 'ai', text: 'Hello! I am your Catalyst AI Analyst powered by Llama 3.1. Ask me about any municipality in Rupandehi — opportunities, gaps, business viability, or comparisons.' }])
+  const [messages, setMessages] = useState([{ role: 'ai', text: 'Hello! I am your Catalyst AI Analyst powered by Qwen. Ask me about any municipality in Rupandehi — opportunities, gaps, business viability, or comparisons.' }])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [activeMunicipality, setActiveMunicipality] = useState<string | null>(null)
@@ -115,7 +115,7 @@ export const AiAnalystChat = () => {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-                  <span className="text-xs ml-1 font-mono">Llama 3.1 thinking...</span>
+                  <span className="text-xs ml-1 font-mono">Qwen thinking...</span>
                 </div>
               </div>
             )}

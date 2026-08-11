@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from app.services.analyze_service import analyze_service
 from app.services.ml_inference import ml_service
-from app.services.ollama_service import generate_chat_response
+from app.services.qwen_service import generate_chat_response
 from app.api.dependencies import DBSession, CurrentUser
 
 
@@ -116,7 +116,7 @@ async def ai_chat(
         except Exception:
             municipality_context = {"name": found_muni}
 
-    # Generate response via Ollama
+    # Generate response via Qwen ML microservice
     reply = generate_chat_response(request.message, municipality_context)
 
     return {"reply": reply, "municipality_context_used": found_muni}

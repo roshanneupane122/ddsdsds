@@ -12,6 +12,9 @@ WORKDIR /app
 # Copy the requirements file to the working directory
 COPY requirements.txt .
 
+# Install the CPU version of PyTorch to save RAM and disk space
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
 # Install the Python dependencies
 # We use --no-cache-dir to keep the image size small
 RUN pip install --no-cache-dir -r requirements.txt
@@ -19,8 +22,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application files to the working directory
 COPY . .
 
-# Expose port 8000 for the FastAPI server
-EXPOSE 8000
+# Expose port 8001 for the FastAPI server
+EXPOSE 8001
 
 # Command to run the FastAPI application using Uvicorn
-CMD ["uvicorn", "ml_prj:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "ml_prj:app", "--host", "0.0.0.0", "--port", "8001"]
