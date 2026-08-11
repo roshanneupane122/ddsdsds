@@ -247,10 +247,13 @@ Your task is to write a short paragraph describing the municipality's strengths,
                     )
                 else:
                     best_in_ward = loc_df.sort_values('business_success_probability', ascending=False).iloc[0]
+                    system_prompt = "You are a helpful AI assistant. Answer the user's question using the provided facts. You must explicitly tell the user the name of the recommended business from the facts."
                     context = (
-                        f"The user wants to open a '{target_business}' in {best_in_ward['municipality_name']} Ward {best_in_ward['ward_no']}. "
-                        f"You MUST tell them NO, but recommend opening a '{best_in_ward['recommended_business']}' which has a success probability of {best_in_ward['business_success_probability']}. "
-                        f"Footfall Index is {best_in_ward['footfall_index']}."
+                        f"User asked: '{user_input}'. "
+                        f"Database Facts: A '{target_business}' is NOT the top recommendation. "
+                        f"Instead, the best business to open in {best_in_ward['municipality_name']} Ward {best_in_ward['ward_no']} is a '{best_in_ward['recommended_business']}' "
+                        f"with a success probability of {best_in_ward['business_success_probability']*100:.1f}%. "
+                        f"Footfall index is {best_in_ward['footfall_index']}."
                     )
             else:
                 loc_data = loc_df.sort_values('business_success_probability', ascending=False).iloc[0]
