@@ -59,10 +59,14 @@ services:
     build: ./Ml
     container_name: ml_backend
     restart: always
+    environment:
+      - HF_HOME=/root/.cache/huggingface
     ports:
       - "8001:8001"
     volumes:
       - ./Ml:/app
+      - huggingface_cache:/root/.cache/huggingface
 
 volumes:
   postgres_data:
+  huggingface_cache:

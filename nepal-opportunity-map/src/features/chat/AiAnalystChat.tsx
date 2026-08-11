@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { apiClient } from '@/services/apiClient'
 
 export const AiAnalystChat = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,21 +23,20 @@ export const AiAnalystChat = () => {
       const muni = municipalityName || activeMunicipality
       if (muni) body.municipality_name = muni
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/analyze/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-      if (res.ok) {
-        const data = await res.json()
-        // Extract municipality context from response if detected
-        if (data.municipality_context_used) setActiveMunicipality(data.municipality_context_used)
-        setMessages(prev => [...prev, { role: 'ai', text: data.reply }])
-      } else {
+      const res = await apiClient.post('/analyze/chat', body, { timeout: 120000 })
+      const data = res.data
+
+      // Extract municipality context from response if detected
+      if (data.municipality_context_used) setActiveMunicipality(data.municipality_context_used)
+      setMessages(prev => [...prev, { role: 'ai', text: data.reply }])
+    } catch (err: any) {
+      if (err.statusCode === 401) {
+        setMessages(prev => [...prev, { role: 'ai', text: 'Authentication error: Please log in again to use the AI Analyst.' }])
+      } else if (err.statusCode) {
         setMessages(prev => [...prev, { role: 'ai', text: 'The AI service is temporarily unavailable. Please try again in a moment.' }])
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', text: 'Error connecting to the AI server. Make sure the backend is running.' }])
       }
-    } catch {
-      setMessages(prev => [...prev, { role: 'ai', text: 'Error connecting to the AI server. Make sure the backend is running.' }])
     } finally {
       setIsLoading(false)
     }
