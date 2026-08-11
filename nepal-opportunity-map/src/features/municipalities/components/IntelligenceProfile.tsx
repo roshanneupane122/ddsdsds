@@ -239,10 +239,10 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
           {intelligence.opportunities?.map((opp: any, i: number) => (
             <Card key={i} padding="sm" className="bg-emerald-900 text-white border-transparent flex flex-col justify-between">
               <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block mb-2">Rank #{i+1}</span>
-              <p className="font-bold text-sm leading-tight mb-4">{opp.business}</p>
+              <p className="font-bold text-sm leading-tight mb-4">{opp.proposed_business || opp.business}</p>
               <div className="flex items-center justify-between mt-auto">
                 <span className="text-xs text-emerald-200">Score</span>
-                <span className="font-bold text-emerald-400">{Math.round(opp.confidence)}</span>
+                <span className="font-bold text-emerald-400">{Math.round(opp.opportunity_score ?? opp.confidence ?? 0)}</span>
               </div>
             </Card>
           ))}
