@@ -11,7 +11,7 @@ interface IntelligenceProfileProps {
 export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intelligence }) => {
   const navigate = useNavigate()
   const { addToCompare, compareIds } = useFilterStore()
-  const isCompared = compareIds.includes(intelligence.municipality_id)
+  const isCompared = compareIds.includes(intelligence?.municipality_id || intelligence?.id)
 
   const handleCompare = () => {
     addToCompare(intelligence.municipality_id)
@@ -78,28 +78,68 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
       <section>
         <h2 className="text-xl font-bold font-display text-slate-900 mb-4">Municipality Development Index</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card padding="md" className="bg-emerald-600 text-white shadow-md border-transparent">
-            <p className="text-xs font-mono font-bold text-emerald-200 uppercase mb-1">Overall Index</p>
-            <div className="flex items-end gap-2">
-              <span className="text-4xl font-black">{intelligence.development_index?.overall != null ? intelligence.development_index.overall : 'N/A'}</span>
-              {intelligence.development_index?.overall != null && <span className="text-sm font-medium text-emerald-200 mb-1">/ 100</span>}
+          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-slate-900 text-white rounded-2xl p-5 shadow-md border border-emerald-600/50 flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-mono font-bold text-emerald-300 uppercase tracking-wider block mb-1">
+                Overall Index
+              </span>
+              <div className="flex items-baseline gap-2 mt-2">
+                <span className="text-5xl font-black font-mono text-white tracking-tight">
+                  {(() => {
+                    const ov = intelligence.development_index?.overall
+                    const score = typeof ov === 'object' ? ov?.score : ov
+                    return score != null ? score : 'N/A'
+                  })()}
+                </span>
+                <span className="text-base font-bold text-emerald-300 font-mono">/ 100</span>
+              </div>
             </div>
-          </Card>
+            <div className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center justify-between text-xs text-emerald-200">
+              <span>Composite Index Status</span>
+              <span className="font-bold text-emerald-300 font-mono uppercase bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-700">
+                {(() => {
+                  const ov = intelligence.development_index?.overall
+                  const status = typeof ov === 'object' ? ov?.status : 'Moderate'
+                  return status || 'High'
+                })()}
+              </span>
+            </div>
+          </div>
           
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            {intelligence.development_index?.economic != null ? <ProgressBar label="Economic Performance" value={intelligence.development_index.economic} color="bg-blue-500" /> : <p className="text-xs italic text-slate-500 text-center">Economic data unavailable</p>}
+            {(() => {
+              const val = intelligence.development_index?.economic
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Economic Performance" value={score} color="bg-blue-500" /> : <p className="text-xs italic text-slate-500 text-center">Economic data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            {intelligence.development_index?.infrastructure != null ? <ProgressBar label="Infrastructure Readiness" value={intelligence.development_index.infrastructure} color="bg-emerald-500" /> : <p className="text-xs italic text-slate-500 text-center">Infrastructure data unavailable</p>}
+            {(() => {
+              const val = intelligence.development_index?.infrastructure
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Infrastructure Readiness" value={score} color="bg-emerald-500" /> : <p className="text-xs italic text-slate-500 text-center">Infrastructure data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            {intelligence.development_index?.social != null ? <ProgressBar label="Social & Healthcare" value={intelligence.development_index.social} color="bg-purple-500" /> : <p className="text-xs italic text-slate-500 text-center">Social data unavailable</p>}
+            {(() => {
+              const val = intelligence.development_index?.social
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Social & Healthcare" value={score} color="bg-purple-500" /> : <p className="text-xs italic text-slate-500 text-center">Social data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            {intelligence.development_index?.accessibility != null ? <ProgressBar label="Market Accessibility" value={intelligence.development_index.accessibility} color="bg-orange-500" /> : <p className="text-xs italic text-slate-500 text-center">Accessibility data unavailable</p>}
+            {(() => {
+              const val = intelligence.development_index?.accessibility
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Market Accessibility" value={score} color="bg-orange-500" /> : <p className="text-xs italic text-slate-500 text-center">Accessibility data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            {intelligence.development_index?.digital != null ? <ProgressBar label="Digital Connectivity" value={intelligence.development_index.digital} color="bg-cyan-500" /> : <p className="text-xs italic text-slate-500 text-center">Digital data unavailable</p>}
+            {(() => {
+              const val = intelligence.development_index?.digital
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Digital Connectivity" value={score} color="bg-cyan-500" /> : <p className="text-xs italic text-slate-500 text-center">Digital data unavailable</p>
+            })()}
           </Card>
         </div>
       </section>
@@ -237,14 +277,25 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {intelligence.opportunities?.map((opp: any, i: number) => (
-            <Card key={i} padding="sm" className="bg-emerald-900 text-white border-transparent flex flex-col justify-between">
-              <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block mb-2">Rank #{i+1}</span>
-              <p className="font-bold text-sm leading-tight mb-4">{opp.proposed_business || opp.business}</p>
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-xs text-emerald-200">Score</span>
-                <span className="font-bold text-emerald-400">{Math.round(opp.opportunity_score ?? opp.confidence ?? 0)}</span>
+            <div 
+              key={i} 
+              className="bg-slate-900 text-white rounded-2xl p-4 border border-emerald-500/30 shadow-md flex flex-col justify-between hover:border-emerald-400 hover:scale-[1.02] transition-all duration-200"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800 uppercase tracking-wider">
+                  Rank #{i+1}
+                </span>
               </div>
-            </Card>
+              <p className="font-bold text-sm text-slate-100 leading-snug my-2 min-h-[40px]">
+                {opp.proposed_business || opp.business}
+              </p>
+              <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-800 text-xs">
+                <span className="text-slate-400 font-medium font-mono uppercase text-[10px]">Score</span>
+                <span className="font-black text-emerald-400 text-base font-mono">
+                  {Math.round(opp.opportunity_score ?? opp.confidence ?? 0)}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       </section>

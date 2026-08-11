@@ -10,6 +10,7 @@ interface LeafletMapContainerProps {
   municipalities: MunicipalityListItem[]
   geojsonData?: GeoJSON.FeatureCollection | null
   selectedMunicipality?: MunicipalityListItem | null
+  hoveredMunicipalityId?: string | null
   onSelectMunicipality: (municipality: MunicipalityListItem) => void
 }
 
@@ -48,6 +49,7 @@ export const LeafletMapContainer = ({
   municipalities,
   geojsonData,
   selectedMunicipality: selectedProp,
+  hoveredMunicipalityId,
   onSelectMunicipality,
 }: LeafletMapContainerProps) => {
   const { activeMapLayer } = useFilterStore()
@@ -57,18 +59,19 @@ export const LeafletMapContainer = ({
 
   const getStyleForFeature = (feature: any) => {
     const isSelected = selected && selected.id === feature.properties.id
+    const isHovered = hoveredMunicipalityId && hoveredMunicipalityId === feature.properties.id
 
     const baseStyle = {
-      color: isSelected ? '#047857' : '#ffffff',
-      weight: isSelected ? 3 : 1,
-      fillOpacity: isSelected ? 0.9 : 0.75,
-      dashArray: isSelected ? '' : '3',
+      color: isSelected ? '#047857' : isHovered ? '#10b981' : '#ffffff',
+      weight: isSelected ? 3.5 : isHovered ? 2.5 : 1,
+      fillOpacity: isSelected ? 0.9 : isHovered ? 0.85 : 0.75,
+      dashArray: isSelected ? '' : isHovered ? '' : '3',
     }
 
     if (!activeMapLayer) {
       return {
         ...baseStyle,
-        fillColor: '#10b981',
+        fillColor: isHovered ? '#059669' : '#10b981',
       }
     }
 
@@ -118,7 +121,7 @@ export const LeafletMapContainer = ({
       mouseover: (e) => {
         const layer = e.target as L.Path
         layer.setStyle({
-          weight: 2,
+          weight: 2.5,
           color: '#34d399',
           dashArray: '',
           fillOpacity: 0.9
@@ -143,7 +146,7 @@ export const LeafletMapContainer = ({
   }
 
   return (
-    <div className="relative w-full h-full min-h-[500px] rounded-2xl overflow-hidden border border-emerald-200 shadow-sm z-0">
+    <div className="relative w-full h-full min-h-[500px] rounded-2xl overflow-hidden border border-emerald-200/80 shadow-sm z-0">
       <MapContainer
         center={[NEPAL_CENTER.lat, NEPAL_CENTER.lng]}
         zoom={NEPAL_DEFAULT_ZOOM}
@@ -160,10 +163,10 @@ export const LeafletMapContainer = ({
         
         <FitBoundsOnGeoJSON geojsonData={geojsonData} selectedMunicipality={selected} />
 
-        {/* Render true GeoJSON boundaries instead of fake CircleMarkers */}
+        {/* Render true GeoJSON boundaries */}
         {geojsonData && geojsonData.features && (
           <GeoJSON
-            key={`geojson-layer-${activeMapLayer}-${selected?.id}`} // Force re-render on style/selection change
+            key={`geojson-layer-${activeMapLayer}-${selected?.id}-${hoveredMunicipalityId}`}
             data={geojsonData}
             style={getStyleForFeature}
             onEachFeature={onEachFeature}
@@ -173,7 +176,7 @@ export const LeafletMapContainer = ({
 
       {/* Dynamic Layer Legend */}
       {activeMapLayer && MAP_LAYERS[activeMapLayer] && (
-        <div className="absolute bottom-6 left-6 z-[1000] bg-white/95 backdrop-blur-md p-3.5 rounded-2xl text-xs space-y-2 shadow-xl max-w-xs border border-emerald-200 pointer-events-none">
+        <div className="absolute bottom-6 left-6 z-[20] bg-white/90 backdrop-blur-xl p-3.5 rounded-2xl text-xs space-y-2 shadow-xl max-w-xs border border-white/60 pointer-events-none">
           <p className="font-bold text-slate-900 font-display">{MAP_LAYERS[activeMapLayer].label}</p>
           <p className="text-slate-600 text-[10px] font-medium leading-normal">{MAP_LAYERS[activeMapLayer].description}</p>
           <div className="flex h-2.5 rounded-full overflow-hidden">

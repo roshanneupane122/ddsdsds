@@ -3,8 +3,8 @@ import { formatCurrency, formatNumber, formatPercent, formatArea } from '@/lib/f
 
 describe('Formatters Utility', () => {
   it('formats currency correctly', () => {
-    expect(formatCurrency(1200)).toBe('$1,200')
-    expect(formatCurrency(1500000, true)).toBe('$1.5M')
+    expect(formatCurrency(1200)).toBe('NPR 1,200')
+    expect(formatCurrency(1500000, true)).toBe('NPR 1.5M')
   })
 
   it('formats compact numbers correctly', () => {

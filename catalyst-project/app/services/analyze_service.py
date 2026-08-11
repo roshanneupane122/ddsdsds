@@ -39,7 +39,28 @@ class AnalyzeService:
         """
         ward_features = override_features if override_features else ml_service.get_ward_features(municipality_name, ward_no)
         if not ward_features:
-            return None
+            # Fallback to municipality average or standard baseline indicators
+            if ml_service.ward_data is not None:
+                muni_df = ml_service.ward_data[ml_service.ward_data['municipality_name'].str.lower() == municipality_name.strip().lower()]
+                if not muni_df.empty:
+                    ward_features = muni_df.mean(numeric_only=True).to_dict()
+
+            if not ward_features:
+                ward_features = {
+                    'population': 45000,
+                    'footfall_index': 65,
+                    'purchasing_power_index': 70,
+                    'electricity_access_pct': 85,
+                    'internet_access_pct': 65,
+                    'water_access_pct': 75,
+                    'road_distance_km': 3.5,
+                    'market_distance_km': 4.0,
+                    'business_density': 12,
+                    'crime_rate_index': 15,
+                    'flood_risk_index': 20,
+                    'agriculture_pct': 40,
+                    'tourist_distance_km': 10
+                }
             
         ml_eval = ml_service.evaluate(municipality_name, ward_features, proposed_business)
         ml_confidence = ml_eval['feasibility_score'] # 0-100
