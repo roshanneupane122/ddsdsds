@@ -8,7 +8,7 @@ from sqlalchemy import text
 router = APIRouter()
 
 @router.get("/layers", summary="Get Spatial Layers as GeoJSON")
-async def get_spatial_layers(db: DBSession):
+async def get_spatial_layers(db: DBSession, sector: str = None, gap: str = None):
     """
     Returns a GeoJSON FeatureCollection where each feature is a municipality.
     Properties include dynamic ML-derived scores (agriculture, infrastructure, economic, etc.)
@@ -16,10 +16,6 @@ async def get_spatial_layers(db: DBSession):
     if ml_service.ward_data is None:
         raise HTTPException(status_code=503, detail="ML Service data not loaded.")
         
-    # We will fetch geometries from the DB if available, else we mock points.
-    # In a full PostGIS setup, we query ST_AsGeoJSON(geom).
-    # Since we might not have full polygons in this MVP (only points), we'll do our best.
-    
     query = text("""
         SELECT municipality_id, name, district, province, total_population,
                ST_AsGeoJSON(geom) as geojson
@@ -28,13 +24,10 @@ async def get_spatial_layers(db: DBSession):
     result = await db.execute(query)
     db_muns = result.fetchall()
     
-    # We'll use the raw data from analyze_service which contains aggregated stats per municipality
-    stats_df = analyze_service.raw_data
-    
     features = []
+    import json
     
     for row in db_muns:
-        # Match with stats_df
         mun_name = row.name
         
         props = {
@@ -43,52 +36,56 @@ async def get_spatial_layers(db: DBSession):
             "district": row.district,
             "province": row.province,
             "population": row.total_population,
-            # Fallbacks in case stats aren't found
-            "agricultureScore": 50,
-            "tourismScore": 50,
-            "infrastructureScore": 50,
-            "economicScore": 50,
-            "digitalScore": 50
+            "agricultureScore": 0,
+            "tourismScore": 0,
+            "infrastructureScore": 0,
+            "economicScore": 0,
+            "digitalScore": 0,
+            "opportunityScore": 0,
+            "infrastructureGapScore": 0
         }
         
-        if stats_df is not None:
-            # Try to find this municipality in the stats
-            stat_row = stats_df[stats_df['municipality_name'].str.lower() == mun_name.lower()]
-            if not stat_row.empty:
-                sr = stat_row.iloc[0]
+        intel = analyze_service.get_municipality_intelligence(mun_name)
+        if intel:
+            props["agricultureScore"] = intel["agriculture"]["agriculture_pct"]
+            props["infrastructureScore"] = intel["development_index"]["infrastructure"]["score"]
+            props["economicScore"] = intel["development_index"]["economic"]["score"]
+            props["digitalScore"] = intel["development_index"]["digital"]["score"]
+            
+            # Tourism proxy (could be based on tourist_distance_km)
+            dist = intel["tourism"]["tourist_distance_km"]
+            props["tourismScore"] = max(0, 100 - (dist * 2))
+            
+            # Sector-specific opportunity
+            target_sector = sector if sector else "Retail"
+            opp_eval = analyze_service.calculate_opportunity_score(mun_name, 1, target_sector)
+            if opp_eval:
+                props["opportunityScore"] = opp_eval.get("opportunity_score", 0)
                 
-                # Derive scores (0-100) from the indicators
-                # This is a simplified normalization for the spatial layer visualization
-                
-                props["agricultureScore"] = min(sr.get('agriculture_pct', 50) * 1.5, 100)
-                props["tourismScore"] = min(sr.get('development_index', 50) + 10, 100) # Proxy
-                
-                # Infrastructure = avg of electricity and internet
-                infra = (sr.get('electricity_access_pct', 50) + sr.get('internet_access_pct', 50)) / 2
-                props["infrastructureScore"] = infra
-                
-                # Economic = function of income and urbanization
-                income_normalized = min((sr.get('average_income_npr', 10000) / 50000) * 100, 100)
-                econ = (income_normalized + sr.get('urbanization_rate', 50)) / 2
-                props["economicScore"] = econ
-                
-                # Digital = internet access
-                props["digitalScore"] = min(sr.get('internet_access_pct', 50) * 1.2, 100)
-                
-        # Parse geojson
-        import json
-        geom = {"type": "Point", "coordinates": [83.4735, 27.6186]}
+            # Infrastructure Gap Score based on severity
+            gap_score = 0
+            target_gap = gap.lower() if gap else None
+            for g in intel.get("gaps", []):
+                if target_gap and target_gap not in g["type"].lower() and target_gap not in g["description"].lower():
+                    continue
+                if g["severity"] == "High": gap_score = max(gap_score, 100)
+                elif g["severity"] == "Medium": gap_score = max(gap_score, 60)
+                elif g["severity"] == "Low": gap_score = max(gap_score, 30)
+            props["infrastructureGapScore"] = gap_score
+
+        geom = None
         if row.geojson:
             try:
                 geom = json.loads(row.geojson)
             except:
                 pass
                 
-        features.append({
-            "type": "Feature",
-            "geometry": geom,
-            "properties": props
-        })
+        if geom:
+            features.append({
+                "type": "Feature",
+                "geometry": geom,
+                "properties": props
+            })
         
     return {
         "type": "FeatureCollection",

@@ -11,7 +11,7 @@ interface IntelligenceProfileProps {
 export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intelligence }) => {
   const navigate = useNavigate()
   const { addToCompare, compareIds } = useFilterStore()
-  const isCompared = compareIds.includes(intelligence.municipality_id)
+  const isCompared = compareIds.includes(intelligence?.municipality_id || intelligence?.id)
 
   const handleCompare = () => {
     addToCompare(intelligence.municipality_id)
@@ -57,19 +57,19 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-emerald-50">
           <div>
             <p className="text-xs font-mono font-bold text-slate-400 uppercase">Population</p>
-            <p className="text-2xl font-bold text-slate-900">{formatNumber(intelligence.overview?.population || 0)}</p>
+            <p className="text-2xl font-bold text-slate-900">{intelligence.overview?.population ? formatNumber(intelligence.overview.population) : <span className="text-sm font-normal italic">Data unavailable</span>}</p>
           </div>
           <div>
             <p className="text-xs font-mono font-bold text-slate-400 uppercase">Households</p>
-            <p className="text-2xl font-bold text-slate-900">{formatNumber(intelligence.overview?.households || 0)}</p>
+            <p className="text-2xl font-bold text-slate-900">{intelligence.overview?.households ? formatNumber(intelligence.overview.households) : <span className="text-sm font-normal italic">Data unavailable</span>}</p>
           </div>
           <div>
             <p className="text-xs font-mono font-bold text-slate-400 uppercase">Urbanization</p>
-            <p className="text-2xl font-bold text-emerald-700">{intelligence.overview?.urbanization_rate || 0}%</p>
+            <p className="text-2xl font-bold text-emerald-700">{intelligence.overview?.urbanization_rate != null ? `${intelligence.overview.urbanization_rate}%` : <span className="text-sm font-normal italic text-slate-500">Data unavailable</span>}</p>
           </div>
           <div>
             <p className="text-xs font-mono font-bold text-slate-400 uppercase">Est. Income / Capita</p>
-            <p className="text-2xl font-bold text-emerald-700">{formatCurrency(intelligence.economy?.average_income_npr || 0)}</p>
+            <p className="text-2xl font-bold text-emerald-700">{intelligence.economy?.average_income_npr != null ? formatCurrency(intelligence.economy.average_income_npr) : <span className="text-sm font-normal italic text-slate-500">Data unavailable</span>}</p>
           </div>
         </div>
       </Card>
@@ -78,28 +78,68 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
       <section>
         <h2 className="text-xl font-bold font-display text-slate-900 mb-4">Municipality Development Index</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card padding="md" className="bg-emerald-600 text-white shadow-md border-transparent">
-            <p className="text-xs font-mono font-bold text-emerald-200 uppercase mb-1">Overall Index</p>
-            <div className="flex items-end gap-2">
-              <span className="text-4xl font-black">{intelligence.development_index?.overall || 0}</span>
-              <span className="text-sm font-medium text-emerald-200 mb-1">/ 100</span>
+          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-slate-900 text-white rounded-2xl p-5 shadow-md border border-emerald-600/50 flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-mono font-bold text-emerald-300 uppercase tracking-wider block mb-1">
+                Overall Index
+              </span>
+              <div className="flex items-baseline gap-2 mt-2">
+                <span className="text-5xl font-black font-mono text-white tracking-tight">
+                  {(() => {
+                    const ov = intelligence.development_index?.overall
+                    const score = typeof ov === 'object' ? ov?.score : ov
+                    return score != null ? score : 'N/A'
+                  })()}
+                </span>
+                <span className="text-base font-bold text-emerald-300 font-mono">/ 100</span>
+              </div>
             </div>
-          </Card>
+            <div className="mt-3 pt-3 border-t border-emerald-700/60 flex items-center justify-between text-xs text-emerald-200">
+              <span>Composite Index Status</span>
+              <span className="font-bold text-emerald-300 font-mono uppercase bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-700">
+                {(() => {
+                  const ov = intelligence.development_index?.overall
+                  const status = typeof ov === 'object' ? ov?.status : 'Moderate'
+                  return status || 'High'
+                })()}
+              </span>
+            </div>
+          </div>
           
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            <ProgressBar label="Economic Performance" value={intelligence.development_index?.economic || 0} color="bg-blue-500" />
+            {(() => {
+              const val = intelligence.development_index?.economic
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Economic Performance" value={score} color="bg-blue-500" /> : <p className="text-xs italic text-slate-500 text-center">Economic data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            <ProgressBar label="Infrastructure Readiness" value={intelligence.development_index?.infrastructure || 0} color="bg-emerald-500" />
+            {(() => {
+              const val = intelligence.development_index?.infrastructure
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Infrastructure Readiness" value={score} color="bg-emerald-500" /> : <p className="text-xs italic text-slate-500 text-center">Infrastructure data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            <ProgressBar label="Social & Healthcare" value={intelligence.development_index?.social || 0} color="bg-purple-500" />
+            {(() => {
+              const val = intelligence.development_index?.social
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Social & Healthcare" value={score} color="bg-purple-500" /> : <p className="text-xs italic text-slate-500 text-center">Social data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            <ProgressBar label="Market Accessibility" value={intelligence.development_index?.accessibility || 0} color="bg-orange-500" />
+            {(() => {
+              const val = intelligence.development_index?.accessibility
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Market Accessibility" value={score} color="bg-orange-500" /> : <p className="text-xs italic text-slate-500 text-center">Accessibility data unavailable</p>
+            })()}
           </Card>
           <Card padding="sm" className="bg-white border border-emerald-100 flex flex-col justify-center">
-            <ProgressBar label="Digital Connectivity" value={intelligence.development_index?.digital || 0} color="bg-cyan-500" />
+            {(() => {
+              const val = intelligence.development_index?.digital
+              const score = typeof val === 'object' ? val?.score : val
+              return score != null ? <ProgressBar label="Digital Connectivity" value={score} color="bg-cyan-500" /> : <p className="text-xs italic text-slate-500 text-center">Digital data unavailable</p>
+            })()}
           </Card>
         </div>
       </section>
@@ -175,19 +215,19 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <span className="text-slate-500 font-medium">Business Density</span>
-                <span className="font-bold text-slate-900">{intelligence.economy?.business_density} / sq.km</span>
+                <span className="font-bold text-slate-900">{intelligence.economy?.business_density != null ? `${intelligence.economy.business_density} / sq.km` : <span className="text-xs italic text-slate-400">Unavailable</span>}</span>
               </div>
               <div className="flex justify-between items-center text-sm p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <span className="text-slate-500 font-medium">Commercial Bldgs</span>
-                <span className="font-bold text-slate-900">{intelligence.economy?.commercial_buildings_avg} avg/ward</span>
+                <span className="font-bold text-slate-900">{intelligence.economy?.commercial_buildings_avg != null ? `${intelligence.economy.commercial_buildings_avg} avg/ward` : <span className="text-xs italic text-slate-400">Unavailable</span>}</span>
               </div>
               <div className="flex justify-between items-center text-sm p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <span className="text-slate-500 font-medium">Industrial Units</span>
-                <span className="font-bold text-slate-900">{intelligence.economy?.industries_avg} avg/ward</span>
+                <span className="font-bold text-slate-900">{intelligence.economy?.industries_avg != null ? `${intelligence.economy.industries_avg} avg/ward` : <span className="text-xs italic text-slate-400">Unavailable</span>}</span>
               </div>
               <div className="flex justify-between items-center text-sm p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <span className="text-slate-500 font-medium">Purchasing Power</span>
-                <span className="font-bold text-slate-900">{intelligence.economy?.purchasing_power_index}/100</span>
+                <span className="font-bold text-slate-900">{intelligence.economy?.purchasing_power_index != null ? `${intelligence.economy.purchasing_power_index}/100` : <span className="text-xs italic text-slate-400">Unavailable</span>}</span>
               </div>
             </div>
           </Card>
@@ -197,7 +237,7 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
             <div className="space-y-3">
               <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
                 <span className="text-xs font-mono font-bold text-emerald-800 uppercase block mb-1">Agricultural Participation</span>
-                <span className="text-3xl font-black text-emerald-700">{intelligence.agriculture?.agriculture_pct}%</span>
+                <span className="text-3xl font-black text-emerald-700">{intelligence.agriculture?.agriculture_pct != null ? `${intelligence.agriculture.agriculture_pct}%` : 'N/A'}</span>
               </div>
               <p className="text-xs text-slate-600 text-center px-4 leading-relaxed font-medium">
                 {intelligence.agriculture?.agriculture_pct > 50 
@@ -210,17 +250,17 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
           <Card padding="md" className="bg-white border border-emerald-100 space-y-4">
             <h3 className="font-bold text-slate-800 text-sm">Infrastructure Availability</h3>
             <div className="space-y-3">
-              <ProgressBar label="Electricity Access" value={intelligence.infrastructure?.electricity_access_pct || 0} />
-              <ProgressBar label="Internet Penetration" value={intelligence.infrastructure?.internet_access_pct || 0} color="bg-blue-500" />
-              <ProgressBar label="Water Access" value={intelligence.infrastructure?.water_access_pct || 0} color="bg-cyan-500" />
+              {intelligence.infrastructure?.electricity_access_pct != null ? <ProgressBar label="Electricity Access" value={intelligence.infrastructure.electricity_access_pct} /> : <p className="text-xs italic text-slate-500">Electricity access unavailable</p>}
+              {intelligence.infrastructure?.internet_access_pct != null ? <ProgressBar label="Internet Penetration" value={intelligence.infrastructure.internet_access_pct} color="bg-blue-500" /> : <p className="text-xs italic text-slate-500">Internet data unavailable</p>}
+              {intelligence.infrastructure?.water_access_pct != null ? <ProgressBar label="Water Access" value={intelligence.infrastructure.water_access_pct} color="bg-cyan-500" /> : <p className="text-xs italic text-slate-500">Water data unavailable</p>}
               
               <div className="pt-2 flex justify-between items-center text-xs border-t border-slate-100">
                 <span className="text-slate-500 font-medium">Avg Road Dist.</span>
-                <span className="font-bold">{intelligence.infrastructure?.road_distance_km} km</span>
+                <span className="font-bold">{intelligence.infrastructure?.road_distance_km != null ? `${intelligence.infrastructure.road_distance_km} km` : 'N/A'}</span>
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-500 font-medium">Avg Market Dist.</span>
-                <span className="font-bold">{intelligence.infrastructure?.market_distance_km} km</span>
+                <span className="font-bold">{intelligence.infrastructure?.market_distance_km != null ? `${intelligence.infrastructure.market_distance_km} km` : 'N/A'}</span>
               </div>
             </div>
           </Card>
@@ -237,14 +277,25 @@ export const IntelligenceProfile: React.FC<IntelligenceProfileProps> = ({ intell
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {intelligence.opportunities?.map((opp: any, i: number) => (
-            <Card key={i} padding="sm" className="bg-emerald-900 text-white border-transparent flex flex-col justify-between">
-              <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase block mb-2">Rank #{i+1}</span>
-              <p className="font-bold text-sm leading-tight mb-4">{opp.business}</p>
-              <div className="flex items-center justify-between mt-auto">
-                <span className="text-xs text-emerald-200">Score</span>
-                <span className="font-bold text-emerald-400">{Math.round(opp.confidence)}</span>
+            <div 
+              key={i} 
+              className="bg-slate-900 text-white rounded-2xl p-4 border border-emerald-500/30 shadow-md flex flex-col justify-between hover:border-emerald-400 hover:scale-[1.02] transition-all duration-200"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800 uppercase tracking-wider">
+                  Rank #{i+1}
+                </span>
               </div>
-            </Card>
+              <p className="font-bold text-sm text-slate-100 leading-snug my-2 min-h-[40px]">
+                {opp.proposed_business || opp.business}
+              </p>
+              <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-800 text-xs">
+                <span className="text-slate-400 font-medium font-mono uppercase text-[10px]">Score</span>
+                <span className="font-black text-emerald-400 text-base font-mono">
+                  {Math.round(opp.opportunity_score ?? opp.confidence ?? 0)}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       </section>

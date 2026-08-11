@@ -18,11 +18,8 @@ async def seed():
         # Check if opportunities exist
         result = await session.execute(select(BusinessOpportunity))
         existing = result.scalars().all()
-        if existing:
-            print("Opportunities already exist. Skipping seed.")
-            return
-
-        print("Seeding Business Opportunities...")
+        if not existing:
+            print("Seeding Business Opportunities...")
         opps = [
             BusinessOpportunity(
                 opportunity_id=str(uuid.uuid4()),
@@ -61,6 +58,15 @@ async def seed():
         print("Fetching municipalities...")
         muni_result = await session.execute(select(Municipality))
         municipalities = muni_result.scalars().all()
+
+        rec_result = await session.execute(select(AIRecommendation))
+        existing_recs = rec_result.scalars().all()
+        if existing_recs:
+            print("Recommendations already exist. Skipping recommendation seed.")
+            return
+
+        if existing:
+            opps = existing
         
         print("Seeding AI Recommendations...")
         recs = []
